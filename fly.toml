@@ -1,0 +1,15 @@
+app = "app-flet-personal"
+
+[build]
+  # se tiver seção build, mantenha
+
+[env]
+  PORT = "8501"
+
+[[services]]
+  internal_port = 8501
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
