@@ -2,7 +2,7 @@ import flet as ft
 import os
 from models import Usuario, SessionLocal, Treino
 
-def main(page: ft.Page):
+async def main(page: ft.Page): # Alterado para async def
     page.vertical_alignment = "stretch"
     page.horizontal_alignment = "stretch"
     
@@ -187,16 +187,14 @@ def main(page: ft.Page):
 #     ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=port, host=host)
 
 # --- INICIALIZAÇÃO DA APLICAÇÃO PARA DEPLOY NO UVICORN ---
-# No contexto de deploy com Uvicorn, 'app' deve ser a função ou objeto ASGI.
-# Usamos ft.app para obter a aplicação ASGI sem iniciar o servidor,
-# permitindo que o Uvicorn gerencie o loop de eventos.
-# Definimos host e port como None para que o Flet não inicie seu próprio servidor HTTP.
-app = ft.app(target=main, view=ft.WEB_BROWSER, port=None, host=None) # CORREÇÃO AQUI: Usar ft.app (função) com port=None, host=None
+# ESSENCIAL: 'app' precisa ser a instância ASGI que Uvicorn pode servir.
+# ft.app_async retorna essa instância, sem iniciar seu próprio servidor asyncio.
+# Não passamos 'view=ft.WEB_BROWSER' para ft.app_async aqui.
+app = ft.app_async(target=main) # CORREÇÃO AQUI: 'main' agora é async, e removemos view/port/host daqui.
 
 # O bloco if __name__ == "__main__": é apenas para rodar localmente.
 if __name__ == "__main__":
     _port = int(os.environ.get("PORT", 8550))
     _host = os.environ.get("HOST", "0.0.0.0")
-    # Para testes locais, usamos ft.app (função), que inicia o servidor Flet.
-    # Aqui, definimos a porta e o host para que a aplicação seja acessível localmente.
+    # Para testes locais, usamos ft.app, que inicia o servidor Flet completo.
     ft.app(target=main, view=ft.WEB_BROWSER, port=_port, host=_host)
