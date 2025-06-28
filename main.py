@@ -83,6 +83,7 @@ def main(page: ft.Page): # Alterado para async def
             treinos = db.query(Treino).filter_by(usuario_id=usuario_id).all()
         treinos_existentes = [ft.Text(x.nome) for x in treinos]
         exercicios = [x.exercicios for x in treinos]
+        gifs = [gif for gif in os.listdir('imagens') if any(exercicio[2:4] in gif for exercicio in exercicios)]
         return ft.View(
             "/treinos",
             controls=[
@@ -144,7 +145,29 @@ def main(page: ft.Page): # Alterado para async def
                             ft.Row(
                                 controls=[
                                     ft.Text('Linha 2'),
-                                    ft.Text(exercicios)
+                                    ft.Text(exercicios),
+                                    
+                                    ft.Container(
+                                        content=ft.Image(
+                                        src='imagens\Agachamento 1.gif',
+                                        fit=ft.ImageFit.CONTAIN
+                                        ),
+                                        expand=1
+                                    ),
+                                    # ft.Container(
+                                    #     content=ft.Image(
+                                    #     src='imagens\Avanco.gif',
+                                    #     fit=ft.ImageFit.CONTAIN
+                                    #     ),
+                                    #     expand=1
+                                    # ),
+                                    ft.Container(
+                                        content=ft.Row([
+                                            ft.Image(src=f"imagens/{item}", fit=ft.ImageFit.CONTAIN) for item in gifs
+                                        ],
+                                        expand=1)
+                                    ),
+                                    
                                 ],
                             ),
                         ]
