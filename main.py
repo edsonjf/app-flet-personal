@@ -187,14 +187,14 @@ def main(page: ft.Page):
 #     ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=port, host=host)
 
 # --- INICIALIZAÇÃO DA APLICAÇÃO PARA DEPLOY NO UVICORN ---
-# Esta é a instância do aplicativo ASGI que o Uvicorn vai servir.
-# Usamos ft.app_async para obter a aplicação ASGI sem iniciar o servidor,
-# permitindo que o Uvicorn gerencie o loop de eventos.
-app = ft.app_async(target=main, view=ft.WEB_BROWSER)
+# No contexto de deploy com Uvicorn, 'app' deve ser uma instância de ft.App.
+# A classe ft.App é o objeto ASGI callable que Uvicorn espera.
+# Passamos a função 'main' para o construtor de ft.App.
+app = ft.App(target=main, view=ft.WEB_BROWSER) # CORREÇÃO AQUI: Usar ft.App (classe)
 
-# O bloco if __name__ == "__main__": agora só serve para rodar localmente.
+# O bloco if __name__ == "__main__": é apenas para rodar localmente.
 if __name__ == "__main__":
     _port = int(os.environ.get("PORT", 8550))
     _host = os.environ.get("HOST", "0.0.0.0")
-    # Para testes locais, você ainda usa ft.app, que inicia o servidor Flet.
+    # Para testes locais, usamos ft.app (função), que inicia o servidor Flet.
     ft.app(target=main, view=ft.WEB_BROWSER, port=_port, host=_host)
