@@ -187,24 +187,14 @@ def main(page: ft.Page):
 #     ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=port, host=host)
 
 # --- INICIALIZAÇÃO DA APLICAÇÃO PARA DEPLOY NO UVICORN ---
-# ft_app_instance PRECISA ser uma variável GLOBAL para que Uvicorn possa encontrá-la.
-# Ela é a instância do aplicativo ASGI que o Uvicorn vai servir.
-# Definimos as variáveis de host e porta aqui para que estejam disponíveis
-# mesmo quando main.py é importado (não executado diretamente).
-
-_port = int(os.environ.get("PORT", 8550))
-_host = os.environ.get("HOST", "0.0.0.0")
-
-# Aqui é onde criamos a instância do aplicativo Flet.
-# Ela precisa ser definida fora do `if __name__ == "__main__":`
-# para que o Uvicorn possa importá-la diretamente.
-ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=_port, host=_host)
+# Esta é a instância do aplicativo ASGI que o Uvicorn vai servir.
+# Usamos ft.app_async para obter a aplicação ASGI sem iniciar o servidor,
+# permitindo que o Uvicorn gerencie o loop de eventos.
+app = ft.app_async(target=main, view=ft.WEB_BROWSER)
 
 # O bloco if __name__ == "__main__": agora só serve para rodar localmente.
-# Para o deploy, o Uvicorn importará ft_app_instance diretamente.
 if __name__ == "__main__":
-    # Quando rodando localmente (python main.py),
-    # ft.app já foi chamado acima. Este bloco pode ser deixado vazio
-    # ou usado para algo específico de desenvolvimento local.
-    # A instância já foi criada.
-    print(f"Aplicação Flet rodando localmente em http://{_host}:{_port}")
+    _port = int(os.environ.get("PORT", 8550))
+    _host = os.environ.get("HOST", "0.0.0.0")
+    # Para testes locais, você ainda usa ft.app, que inicia o servidor Flet.
+    ft.app(target=main, view=ft.WEB_BROWSER, port=_port, host=_host)

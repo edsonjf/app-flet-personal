@@ -3,6 +3,6 @@ services:
     name: flet-app
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:ft_app_instance --host 0.0.0.0 --port $PORT
+    startCommand: "app: uvicorn main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /
     
