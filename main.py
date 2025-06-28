@@ -1,5 +1,5 @@
 import flet as ft
-import json
+import os
 from models import Usuario, SessionLocal, Treino
 
 def main(page: ft.Page):
@@ -174,5 +174,14 @@ def main(page: ft.Page):
 # Inicia a aplicação Flet.
 # ft.app(target=main) para rodar como app desktop
 # ft.app(target=main, view=ft.WEB_BROWSER) para rodar no navegador
+# if __name__ == "__main__":
+#     ft.app(target=main, view=ft.WEB_BROWSER)
+# No final do main.py
 if __name__ == "__main__":
-    ft.app(target=main, view=ft.WEB_BROWSER)
+    port = int(os.environ.get("PORT", 8550))
+    host = os.environ.get("HOST", "0.0.0.0")
+
+    # Capture a instância da aplicação Flet
+    # Nomeie a variável globalmente para Uvicorn encontrar
+    global ft_app_instance
+    ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=port, host=host)
