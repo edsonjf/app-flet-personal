@@ -2,7 +2,7 @@ import flet as ft
 import os
 from models import Usuario, SessionLocal, Treino
 
-async def main(page: ft.Page): # Alterado para async def
+def main(page: ft.Page): # Alterado para async def
     page.vertical_alignment = "stretch"
     page.horizontal_alignment = "stretch"
     
@@ -171,6 +171,7 @@ async def main(page: ft.Page): # Alterado para async def
         
     page.on_route_change = route_change
     page.go(page.route)
+    
 # Inicia a aplicação Flet.
 # ft.app(target=main) para rodar como app desktop
 # ft.app(target=main, view=ft.WEB_BROWSER) para rodar no navegador
@@ -186,15 +187,5 @@ async def main(page: ft.Page): # Alterado para async def
 #     global ft_app_instance
 #     ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=port, host=host)
 
-# --- INICIALIZAÇÃO DA APLICAÇÃO PARA DEPLOY NO UVICORN ---
-# ESSENCIAL: 'app' precisa ser a instância ASGI que Uvicorn pode servir.
-# ft.app_async retorna essa instância, sem iniciar seu próprio servidor asyncio.
-# Não passamos 'view=ft.WEB_BROWSER' para ft.app_async aqui.
-app = ft.app_async(target=main) # CORREÇÃO AQUI: 'main' agora é async, e removemos view/port/host daqui.
-
-# O bloco if __name__ == "__main__": é apenas para rodar localmente.
-if __name__ == "__main__":
-    _port = int(os.environ.get("PORT", 8550))
-    _host = os.environ.get("HOST", "0.0.0.0")
-    # Para testes locais, usamos ft.app, que inicia o servidor Flet completo.
-    ft.app(target=main, view=ft.WEB_BROWSER, port=_port, host=_host)
+# Render usa variáveis de ambiente de porta, o Flet cuida disso automaticamente em modo web.
+ft.app(target=main, view=ft.WEB_BROWSER)
