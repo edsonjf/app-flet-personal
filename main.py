@@ -1,6 +1,7 @@
 import flet as ft
 import os
-from models import Usuario, SessionLocal, Treino
+from models import Usuario, SessionLocal, Treino, QuestionarioDor
+from funcoes import df_gifs, criar_card
 
 def main(page: ft.Page): # Alterado para async def
     page.vertical_alignment = "stretch"
@@ -50,11 +51,59 @@ def main(page: ft.Page): # Alterado para async def
             vertical_alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
-        
+    
+    def tem_Exercicios(treino):
+        for i in treino:
+            if i.exercicios:
+                return True
+            else:
+                return False 
+            
     def home():
         usuario_id = page.session.get('usuario_id')
+        
+        col_lista_treinos = ft.Column()
+        # col_lista_treinos.height = page.height * 0.05
+        texto = ft.Text()
+        row2 = ft.Row()
+        row2.height = page.height * 0.5
+        row2.scroll = 'auto'
+        
         with SessionLocal() as db:
+            # Carrega os treinos disponíveis no dropdown
             usuario = db.query(Usuario).filter_by(id=usuario_id).first()
+            nomes_treinos = [x.nome for x in db.query(Treino).filter_by(usuario_id=usuario_id).all()]
+        
+        # Função chamada ao selecionar um item no dropdown
+        def dropdown_chama(e):
+            dropdown_selected = str(e.control.value)
+            with SessionLocal() as db:
+                treino_selected = db.query(Treino).filter_by(usuario_id=usuario_id, nome=dropdown_selected).all()
+            
+                texto.value = dropdown_selected
+            
+                if tem_Exercicios(treino=treino_selected):
+                    # Achatar a lista de exercícios e criar Texts
+                    exercicios_series_repeticoes = [{'Nome':x.exercicios.nome, 'Séries': x.exercicios.series, 'Repetições': x.exercicios.repeticoes} for x in treino_selected]
+                    for item in exercicios_series_repeticoes:
+                        if not df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)].empty:
+                            v = df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)]['Arquivo'].values
+                            item['Gif'] = v[0]
+                else:
+                    exercicios_series_repeticoes = []
+                col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}", size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
+                row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"imagens/{x['Gif']}" if 'Gif' in x else None, page=page) 
+                                    for x in exercicios_series_repeticoes]
+            page.update()
+
+        # Dropdown populado com nomes dos treinos
+        dropdown1 = ft.Dropdown(
+            label='Selecione um treino',
+            options=[ft.dropdown.Option(x) for x in sorted(set(nomes_treinos))],
+            on_change=dropdown_chama,
+            width=300
+        )
+        
         return ft.View(
             "/",
             controls=[
@@ -63,119 +112,172 @@ def main(page: ft.Page): # Alterado para async def
                     bgcolor=ft.Colors.BLUE_GREY_700, 
                     center_title=True,
                     actions=[
-                        ft.ElevatedButton('Treinos', on_click= lambda _: page.go('/treinos')),
-                        ft.ElevatedButton("Sair", on_click=lambda _: page.go('/login')),
-                    ]
-                    ),
-                ft.Column([
-                    ft.Text(f"Olá {usuario.nome}"),
-                    ft.Text(f"Status da sessão: {page.session.get('loggedIn')}"),
-                    ft.Text(f"{usuario.email}")
-                    ]
-                ),
-                ft.Text('HOme'),
-            ]
-        )
-    
-    def page_treinos():
-        usuario_id = page.session.get('usuario_id')
-        with SessionLocal() as db:
-            treinos = db.query(Treino).filter_by(usuario_id=usuario_id).all()
-        treinos_existentes = [ft.Text(x.nome) for x in treinos]
-        exercicios = [x.exercicios for x in treinos]
-        gifs = [gif for gif in os.listdir('imagens') if any(exercicio[2:4] in gif for exercicio in exercicios)]
-        return ft.View(
-            "/treinos",
-            controls=[
-                ft.AppBar(
-                    title=ft.Text("Página Treino", weight=ft.FontWeight.BOLD),
-                    bgcolor=ft.Colors.BLUE_GREY_700, 
-                    center_title=True,
-                    actions=[
-                        ft.ElevatedButton('Início', on_click=lambda _: page.go('/')),
-                        ft.ElevatedButton("Sair", on_click=lambda _: page.go('/login'))
-                    ],
-                    ),
-                ft.Column([
-                    ft.Text(f"ID usuário {usuario_id}"),
-                    # ft.ElevatedButton('Logout', on_click=logout),
-                    ft.Text(f"Status da sessão: {page.session.get('loggedIn')}")
+                        ft.Row(
+                            spacing=15,
+                            controls=[
+                                ft.ElevatedButton('Questionario', on_click= lambda _: page.go('/questionario')),
+                                ft.ElevatedButton("Sair", on_click=lambda _: page.go('/login')),
+                            ],
+                        )
                     ]
                 ),
-                ft.Text('Treinos'),
-                ft.Container(
-                    padding=20,
-                    bgcolor=ft.Colors.with_opacity(0.2, ft.Colors.GREEN_500),  # cor verde com 20% de opacidade
-                    height=400,
-                    expand=True,
-                    content=ft.Column(
-                        controls=[
-                            # Primeira linha
-                            ft.Row(
-                                controls=[
-                                    ft.Text('Linha 1'),
-
-                                    # Container dentro da Row, com fundo vermelho claro
-                                    ft.Container(
-                                        padding=20,
-                                        bgcolor=ft.Colors.with_opacity(0.2, ft.Colors.RED),
-                                        content=ft.Row(
-                                            controls=[
-                                                ft.Text("Subitem A"),
-                                                ft.Text("Subitem B"),
-                                            ]
-                                        )
-                                    ),
-                                    ft.Container(
-                                        padding=20,
-                                        bgcolor=ft.Colors.with_opacity(0.2, ft.Colors.RED),
-                                        content=ft.Row(
-                                            controls=[
-                                                ft.Text("Subitem C"),
-                                                ft.Text("Subitem D"),
-                                            ]
-                                        )
-                                    )
-                                ],
-                                # expand=1
-                                # alignment="center",  # pode ser usado para ajustar o alinhamento
-                            ),
-
-                            # Segunda linha
-                            ft.Row(
-                                controls=[
-                                    ft.Text('Linha 2'),
-                                    ft.Text(exercicios),
-                                    
-                                    ft.Container(
-                                        content=ft.Image(
-                                        src='imagens\Agachamento 1.gif',
-                                        fit=ft.ImageFit.CONTAIN
+                ft.Column(
+                            controls=[
+                                ft.Row(
+                                    spacing=page.width * 0.2,
+                                    controls=[
+                                        ft.Text(f"Olá, {usuario.nome}!", size=24, weight="bold"),
+                                        dropdown1,
+                                    ],
+                                ),
+                                ft.Divider(),
+                                ft.Row(
+                                    controls=[
+                                        ft.Card(
+                                            content=ft.Container(
+                                                content=ft.Row(
+                                                    height=page.height * 0.5,
+                                                    width=page.width * 0.25,
+                                                    controls=[
+                                                        ft.Column(
+                                                            scroll='auto',
+                                                            alignment=ft.MainAxisAlignment.CENTER,
+                                                            controls=[
+                                                                ft.Text('Exercícios', size=20, weight='bold'),
+                                                                col_lista_treinos,
+                                                            ]
+                                                        )
+                                                    ],
+                                                ), 
+                                            )
                                         ),
-                                        expand=1
-                                    ),
-                                    # ft.Container(
-                                    #     content=ft.Image(
-                                    #     src='imagens\Avanco.gif',
-                                    #     fit=ft.ImageFit.CONTAIN
-                                    #     ),
-                                    #     expand=1
-                                    # ),
-                                    ft.Container(
-                                        content=ft.Row([
-                                            ft.Image(src=f"imagens/{item}", fit=ft.ImageFit.CONTAIN) for item in gifs
-                                        ],
-                                        expand=1)
-                                    ),
-                                    
-                                ],
-                            ),
-                        ]
-                    )
-                )
+                                        ft.Divider(),
+                                        ft.Card(
+                                            content=ft.Container(
+                                                content=ft.Row([
+                                                    ft.Row([row2],expand=1, scroll='auto'),
+                                                ],
+                                                scroll='auto'
+                                                )
+                                            ),
+                                        ),
+                                    ],
+                                    scroll='auto'
+                                )
+                            ]
+                            
+                        )
+                    ]
+            
+    )
+    
+    # Criar referências para os Dropdowns
+    pre_pos_ref = ft.Ref[ft.Dropdown]()
+    local_ref = ft.Ref[ft.Dropdown]()
+    intensidade_ref = ft.Ref[ft.Dropdown]()
 
-            ]
-        )
+    resultado = ft.Text()
+
+    # Função para criar os Dropdowns dinamicamente
+    def criar_dropdowns():
+        return [
+            ft.Dropdown(
+                ref=pre_pos_ref,
+                label="Pré ou Pós treino?",
+                options=[ft.dropdown.Option("Pré"), ft.dropdown.Option("Pós")],
+                width=300
+            ),
+            ft.Dropdown(
+                ref=local_ref,
+                label="Qual parte do corpo?",
+                options=[ft.dropdown.Option(str(i)) for i in range(0, 54)],
+                width=300
+            ),
+            ft.Dropdown(
+                ref=intensidade_ref,
+                label="Qual intensidade da dor?",
+                options=[ft.dropdown.Option(str(i)) for i in range(0, 11)],
+                width=300
+            )
+        ]
+
+    # Container que irá segurar os Dropdowns
+    form_column = ft.Column(controls=criar_dropdowns())
+
+    def enviar(e):
+        usuario_id = page.session.get('usuario_id')
+        pre_pos_treino = pre_pos_ref.current.value
+        local = local_ref.current.value
+        intensidade = intensidade_ref.current.value
+
+        if not pre_pos_treino or not local or not intensidade:
+            resultado.value = "Preencha os campos!"
+            resultado.color = "red"
+        else:
+            with SessionLocal() as db:
+                resposta = QuestionarioDor(
+                usuario_id = usuario_id,
+                pre_pos_treino = pre_pos_treino,
+                local = local,
+                intensidade = intensidade
+                )
+                db.add(resposta)
+                db.commit()
+            
+            resultado.value = "Formulário enviado!"
+            resultado.color = "green"
+
+            # 🔁 Recriar os dropdowns para limpá-los visualmente
+            form_column.controls = criar_dropdowns()
+            form_column.update()
+
+        resultado.update()
+    enviar_button = ft.ElevatedButton("Enviar", on_click=enviar)
+    
+    def QuestionarioView():
+        
+        return ft.View(
+                    route="/questionario",
+                    spacing=20,
+                    scroll='auto',
+                    padding=30,
+                    controls=[
+                        ft.AppBar(
+                        title=ft.Text("Questionário", weight=ft.FontWeight.BOLD),
+                        bgcolor=ft.Colors.BLUE_GREY_700, 
+                        center_title=True,
+                        actions=[
+                            ft.Row(
+                                spacing=15,
+                                alignment='end',
+                                controls=[
+                                    ft.ElevatedButton('Página Inicial', on_click= lambda _: page.go('/')),
+                                    ft.ElevatedButton("Sair", on_click=lambda _: page.go('/login')),
+                                ]
+                            )
+                            
+                        ]
+                        ),
+                        ft.Row(
+                            controls=[
+                                ft.Column(
+                            
+                                        controls=[
+                                            ft.Image(src='imagens/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN)
+                                        ]
+                                    ),
+                                ft.Column([
+                                    ft.Text("Formulário de Dor", size=24, weight="bold"),
+                                    form_column,
+                                    enviar_button,
+                                    resultado
+                                ])
+                            ]
+                            
+                        )
+                    ]
+                )
+                
     def route_change(route):
         page.views.clear()
         
@@ -188,8 +290,8 @@ def main(page: ft.Page): # Alterado para async def
             page.views.append(login_page())
         elif page.route == '/':
             page.views.append(home())
-        elif page.route == '/treinos':
-            page.views.append(page_treinos())
+        elif page.route == '/questionario':
+            page.views.append(QuestionarioView())
         page.update()
         
     page.on_route_change = route_change
