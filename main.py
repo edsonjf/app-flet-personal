@@ -122,24 +122,29 @@ def main(page: ft.Page): # Alterado para async def
                     ]
                 ),
                 ft.Column(
-                            controls=[
+                    scroll='auto',
+                    controls=[
                                 ft.Row(
                                     spacing=page.width * 0.2,
                                     controls=[
                                         ft.Text(f"Olá, {usuario.nome}!", size=24, weight="bold"),
-                                        dropdown1,
+                                        
                                     ],
                                 ),
                                 ft.Divider(),
                                 ft.Row(
+                                    height=page.height * 0.4,
                                     controls=[
                                         ft.Card(
+                                            content=ft.Column(
+                                                controls=[
+                                                    dropdown1
+                                                ]
+                                            )
+                                            ),
+                                        ft.Card(
                                             content=ft.Container(
-                                                content=ft.Row(
-                                                    height=page.height * 0.5,
-                                                    width=page.width * 0.25,
-                                                    controls=[
-                                                        ft.Column(
+                                                content=ft.Column(
                                                             scroll='auto',
                                                             alignment=ft.MainAxisAlignment.CENTER,
                                                             controls=[
@@ -147,11 +152,15 @@ def main(page: ft.Page): # Alterado para async def
                                                                 col_lista_treinos,
                                                             ]
                                                         )
-                                                    ],
-                                                ), 
-                                            )
+                                            ),
                                         ),
-                                        ft.Divider(),
+                                    ],
+                                    scroll='auto'
+                                ),
+                                ft.Divider(),
+                                ft.Row(
+                                    scroll='auto',
+                                    controls=[
                                         ft.Card(
                                             content=ft.Container(
                                                 content=ft.Row([
@@ -161,14 +170,12 @@ def main(page: ft.Page): # Alterado para async def
                                                 )
                                             ),
                                         ),
-                                    ],
-                                    scroll='auto'
+                                    ]
                                 )
-                            ]
-                            
+                            ],
                         )
-                    ]
-            
+            ],
+            scroll='auto'
     )
     
     # Criar referências para os Dropdowns
@@ -259,19 +266,23 @@ def main(page: ft.Page): # Alterado para async def
                         ]
                         ),
                         ft.Row(
+                            expand=1,
                             controls=[
                                 ft.Column(
-                            
+                                        expand=1,
                                         controls=[
                                             ft.Image(src='imagens/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN)
                                         ]
                                     ),
-                                ft.Column([
+                                ft.Column(
+                                    expand=1,
+                                    controls=[
                                     ft.Text("Formulário de Dor", size=24, weight="bold"),
                                     form_column,
                                     enviar_button,
                                     resultado
-                                ])
+                                    ]
+                                )
                             ]
                             
                         )
