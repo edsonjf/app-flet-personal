@@ -92,7 +92,7 @@ def main(page: ft.Page): # Alterado para async def
                 else:
                     exercicios_series_repeticoes = []
                 col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}", size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
-                row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"imagens/{x['Gif']}" if 'Gif' in x else None, page=page) 
+                row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"/{x['Gif']}" if 'Gif' in x else None, page=page) 
                                     for x in exercicios_series_repeticoes]
             page.update()
 
@@ -271,7 +271,7 @@ def main(page: ft.Page): # Alterado para async def
                                 ft.Column(
                                         expand=1,
                                         controls=[
-                                            ft.Image(src='imagens/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN)
+                                            ft.Image(src='/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN)
                                         ]
                                     ),
                                 ft.Column(
@@ -324,4 +324,4 @@ def main(page: ft.Page): # Alterado para async def
 #     ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=port, host=host)
 
 # Render usa variáveis de ambiente de porta, o Flet cuida disso automaticamente em modo web.
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main, view=ft.WEB_BROWSER, assets_dir="assets")
