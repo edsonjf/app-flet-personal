@@ -155,7 +155,7 @@ def main(page: ft.Page): # Alterado para async def
                                             )
                                         ),
                                 ft.Container(
-                                        bgcolor=ft.Colors.BLUE_GREY_100,
+                                        # bgcolor=ft.Colors.BLUE_GREY_300,
                                         height=150,
                                         col={"xs": 12, "sm": 5, "md": 5},  # 100% em telas pequenas, 50% em médias, 33% em grandes
                                         content=ft.Column(
@@ -176,7 +176,7 @@ def main(page: ft.Page): # Alterado para async def
                             alignment=ft.MainAxisAlignment.CENTER,
                             controls=[
                                 ft.Container(
-                                        bgcolor=ft.Colors.BLUE_GREY_100,
+                                        # bgcolor=ft.Colors.BLUE_GREY_300,
                                         height=250,
                                         col={"xs": 12, "sm": 10, "md": 10},  # 100% em telas pequenas, 50% em médias, 33% em grandes
                                         content=ft.Row(
