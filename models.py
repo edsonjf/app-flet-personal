@@ -32,7 +32,7 @@ if not DATABASE_URL:
     raise ValueError("DATABASE_URL não encontrada no .env")
 
 # Cria engine e sessão
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False)
 # Sessão para consultas e transações
 SessionLocal = sessionmaker(bind=engine)
 
