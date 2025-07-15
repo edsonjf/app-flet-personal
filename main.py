@@ -279,27 +279,46 @@ def main(page: ft.Page): # Alterado para async def
                             
                         ]
                         ),
-                        ft.Row(
-                            expand=1,
+                        ft.Column(
+                            expand=True,
                             controls=[
-                                ft.Column(
-                                        expand=1,
-                                        controls=[
-                                            ft.Image(src='/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN)
-                                        ]
-                                    ),
-                                ft.Column(
-                                    expand=1,
+                                ft.ResponsiveRow(
+                                    expand=True,
+                                    alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
-                                    ft.Text("Formulário de Dor", size=24, weight="bold"),
-                                    form_column,
-                                    enviar_button,
-                                    resultado
+                                        ft.Container(
+                                            col={"xs":12, "sm":6, "md":4},
+                                            # bgcolor=ft.Colors.AMBER_500,
+                                            content=ft.Text('Formulário de dor!', weight='bold', size=28, text_align='center'),
+                                        )
+                                        
                                     ]
-                                )
+                                ),
+                                ft.ResponsiveRow(
+                                    expand=True,
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    controls=[
+                                        ft.Container(
+                                            col={"xs":12, "sm":8, "md":8},
+                                            content=ft.Image(src='/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
+                                        ),
+                                        ft.Container(
+                                            col={"xs":12, "sm":4, "md":4},
+                                            content=ft.Column(
+                                                expand=True,
+                                                controls=[
+                                                    form_column,
+                                                    enviar_button,
+                                                    resultado
+                                                ]
+                                            )
+                                        ),
+                                        
+                                    ]
+                                ),
+                                
                             ]
-                            
-                        )
+                        ),
                     ]
                 )
                 
