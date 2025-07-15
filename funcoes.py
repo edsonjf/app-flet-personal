@@ -5,7 +5,7 @@ import os
 import flet as ft
 
 dados = {
-    'Arquivo': os.listdir('imagens'),
+    'Arquivo': os.listdir('assets'),
 }
 df_gifs = pd.DataFrame(dados)
 
@@ -25,14 +25,22 @@ def obter_gifs(id:int, db):
 # def criar_card(nome: str, descricao: str, imagem_url: str) -> ft.Card:
 def criar_card(nome: str, series: int, repeticoes:int, imagem_url: str, page) -> ft.Card:
     return ft.Card(
-        elevation=4,
+        col={"xs": 10, "sm": 6, "md": 4},
+        # elevation=4,
         content=ft.Container(
+            col={"xs": 12, "sm": 6, "md": 4},
             padding=10,
             content=ft.Column([
                 ft.Row(
                     expand=2,
                     # scroll='auto',
-                    controls=[ft.Image(src=imagem_url, width=page.width * 0.2, height=page.height * 0.2, fit=ft.ImageFit.CONTAIN),],
+                    controls=[ft.Image(
+                        src=imagem_url,
+                        # width=page.width * 0.2,
+                        # height=page.height * 0.2,
+                        fit=ft.ImageFit.CONTAIN
+                        ),
+                    ],
                     
                 ),
                 ft.Column(
@@ -48,5 +56,5 @@ def criar_card(nome: str, series: int, repeticoes:int, imagem_url: str, page) ->
                 
             ]),
         ),
-        width=page.width * 0.2, 
+        # width=page.width * 0.2, 
     )
