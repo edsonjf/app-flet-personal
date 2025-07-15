@@ -89,11 +89,12 @@ def main(page: ft.Page): # Alterado para async def
                         if not df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)].empty:
                             v = df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)]['Arquivo'].values
                             item['Gif'] = v[0]
+                            col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}", size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
+                            row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"/{x['Gif']}" if 'Gif' in x else None, page=page) 
+                                                for x in exercicios_series_repeticoes]
                 else:
                     exercicios_series_repeticoes = []
-                col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}", size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
-                row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"/{x['Gif']}" if 'Gif' in x else None, page=page) 
-                                    for x in exercicios_series_repeticoes]
+                
             page.update()
 
         # Dropdown populado com nomes dos treinos
@@ -101,7 +102,7 @@ def main(page: ft.Page): # Alterado para async def
             label='Selecione um treino',
             options=[ft.dropdown.Option(x) for x in sorted(set(nomes_treinos))],
             on_change=dropdown_chama,
-            width=300
+            width=300,
         )
         
         return ft.View(
@@ -122,58 +123,71 @@ def main(page: ft.Page): # Alterado para async def
                     ]
                 ),
                 ft.Column(
-                    scroll='auto',
+                    expand=True,
                     controls=[
-                                ft.Row(
-                                    spacing=page.width * 0.2,
-                                    controls=[
-                                        ft.Text(f"Olá, {usuario.nome}!", size=24, weight="bold"),
-                                        
-                                    ],
-                                ),
-                                ft.Divider(),
-                                ft.Row(
-                                    height=page.height * 0.4,
-                                    controls=[
-                                        ft.Card(
-                                            content=ft.Column(
-                                                controls=[
-                                                    dropdown1
+                        # Linha 1
+                        ft.ResponsiveRow(
+                            expand=True,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.Container(
+                                        # bgcolor=ft.Colors.BLUE_100,
+                                        height=50,
+                                        col={"xs": 12, "sm": 6, "md": 6},  # 100% em telas pequenas, 50% em médias, 33% em grandes
+                                        content=ft.Text(f"Olá, {usuario.nome}!", size=24, weight="bold"),
+                                    ),
+                            ] 
+                        ),
+                        ft.Divider(),
+                        # Linha 2
+                        ft.ResponsiveRow(
+                            expand=True,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.Container(
+                                        # bgcolor=ft.Colors.BLUE_100,
+                                        height=150,
+                                        col={"xs": 12, "sm": 5, "md": 5},  # 100% em telas pequenas, 50% em médias, 33% em grandes
+                                        content=ft.Column(
+                                                    controls=[
+                                                        dropdown1
                                                 ]
                                             )
-                                            ),
-                                        ft.Card(
-                                            content=ft.Container(
-                                                content=ft.Column(
-                                                            scroll='auto',
-                                                            alignment=ft.MainAxisAlignment.CENTER,
-                                                            controls=[
-                                                                ft.Text('Exercícios', size=20, weight='bold'),
-                                                                col_lista_treinos,
-                                                            ]
-                                                        )
-                                            ),
                                         ),
-                                    ],
-                                    scroll='auto'
-                                ),
-                                ft.Divider(),
-                                ft.Row(
-                                    scroll='auto',
-                                    controls=[
-                                        ft.Card(
-                                            content=ft.Container(
-                                                content=ft.Row([
-                                                    ft.Row([row2],expand=1, scroll='auto'),
-                                                ],
-                                                scroll='auto'
-                                                )
-                                            ),
+                                ft.Container(
+                                        bgcolor=ft.Colors.BLUE_GREY_100,
+                                        height=150,
+                                        col={"xs": 12, "sm": 5, "md": 5},  # 100% em telas pequenas, 50% em médias, 33% em grandes
+                                        content=ft.Column(
+                                            scroll='auto',
+                                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                                    controls=[
+                                                        ft.Text('Exercícios', size=20, weight='bold'),
+                                                        col_lista_treinos,
+                                                ]
+                                            )
                                         ),
-                                    ]
-                                )
-                            ],
+                            ] 
+                        ),
+                        ft.Divider(),
+                        # Linha 3
+                        ft.ResponsiveRow(
+                            expand=True,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.Container(
+                                        bgcolor=ft.Colors.BLUE_GREY_100,
+                                        height=250,
+                                        col={"xs": 12, "sm": 10, "md": 10},  # 100% em telas pequenas, 50% em médias, 33% em grandes
+                                        content=ft.Row(
+                                            scroll='auto',
+                                            controls=[row2]
+                                            ), 
+                                    ),
+                            ] 
                         )
+                    ]
+                ),
             ],
             scroll='auto'
     )
@@ -289,6 +303,12 @@ def main(page: ft.Page): # Alterado para async def
                     ]
                 )
                 
+    # # Atualiza largura dinamicamente ao redimensionar
+    # def on_resize(e):
+    #     page.controls[0].width = page.width
+    #     page.update()
+    # page.on_resize = on_resize
+    
     def route_change(route):
         page.views.clear()
         
@@ -304,7 +324,7 @@ def main(page: ft.Page): # Alterado para async def
         elif page.route == '/questionario':
             page.views.append(QuestionarioView())
         page.update()
-        
+    
     page.on_route_change = route_change
     page.go(page.route)
     
