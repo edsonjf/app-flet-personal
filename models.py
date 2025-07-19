@@ -1,28 +1,14 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Float, Date, text
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Float, Date, ARRAY, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-from datetime import date
+from datetime import datetime
+import pytz
 import os
 import psycopg2
 from dotenv import load_dotenv
 
-# Conexão com banco SQLite
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# db_path = os.path.join(BASE_DIR, "personal.db")
-# engine = create_engine(
-#     f"sqlite:///{db_path}",
-#     connect_args={"check_same_thread": False},
-#     echo=False
-#     )
-# senha = 'Pds24#!'
-# # engine = create_engine(
-# uri = f"postgresql+psycopg2://postgres:[{senha}]@db.idxwdmkvhjohzsuevrpu.supabase.co:5432/postgres",
-#     # echo=False
-# # )
+# Fuso horário do Brasil
+fuso_br = pytz.timezone("America/Sao_Paulo")
 
-# conn = psycopg2.connect(uri)
-
-# Supabase
-# Carrega variáveis de ambiente do .env
 load_dotenv()
 
 # Obtém a URL do banco de dados
@@ -41,48 +27,62 @@ Base = declarative_base()
 
 # Modelo da tabela de usuários
 class Usuario(Base):
-    __tablename__ = "usuarios"
+    __tablename__ = 'usuarios'
 
-    id = Column(Integer, primary_key=True, index=True)
-    nome = Column(String(100), unique=False, nullable=False)
+    id = Column(Integer, primary_key=True)
+    nome = Column(String, nullable=False)
     email = Column(String(150), unique=True, nullable=False)
     senha = Column(String(100), unique=False)
     nascimento = Column(Date, unique=False, nullable=True)
-    
-    treinos = relationship('Treino', back_populates='usuario')
+
+    # Relacionamento 1-para-N 
+    treinos = relationship("Treino", back_populates="usuario")
     questionario = relationship('QuestionarioDor', back_populates='usuario')
-    
-    # Relacionamento 1-para-N com ControlePeso
     medidas = relationship("ControleMedida", back_populates="usuario")
+    controle_acessos = relationship("ControleAcesso", back_populates="usuario")
+
+class Treino(Base):
+    __tablename__ = 'treinos'
+
+    id = Column(Integer, primary_key=True)
+    titulo = Column(String, nullable=False)
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
+    descricao = Column(String)
+
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
+
+    usuario = relationship("Usuario", back_populates="treinos")
+    exercicios_prescritos = relationship("ExercicioPrescrito", back_populates="treino")
 
 class Exercicio(Base):
-    __tablename__ = "exercicios"
-    
+    __tablename__ = 'exercicios'
+
     id = Column(Integer, primary_key=True)
-    
-    usuarios = relationship('Treino', back_populates='exercicios')
-    
-    nome = Column(String(150), unique=False, nullable=True)
-    series = Column(Integer, unique=False, nullable=True)
-    repeticoes = Column(Integer, unique=False, nullable=True)
-    peso = Column(Float, unique=False, nullable=True)
-    intervalo = Column(Float, unique=False, nullable=True)
-    
-# Tabela de associativa
-class Treino(Base):
-    __tablename__ = "treinos"
-    
-    id = Column(Integer, primary_key=True)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    exercicio_id = Column(Integer, ForeignKey('exercicios.id'))
-    
-    nome = Column(String(150), unique=False, nullable=True)
-    data = Column(Date, default=date.today)
+    nome = Column(String, nullable=False)
+    membro = Column(String(10), nullable=True)
+    ativacao_muscular = Column(String(100), nullable=True)
     descricao = Column(String)
-    
-    usuario = relationship('Usuario', back_populates='treinos')
-    exercicios = relationship('Exercicio', back_populates='usuarios')
-    
+
+    exercicios_prescritos = relationship("ExercicioPrescrito", back_populates="exercicio")
+
+class ExercicioPrescrito(Base):
+    __tablename__ = 'exercicios_prescritos'
+
+    id = Column(Integer, primary_key=True)
+    treino_id = Column(Integer, ForeignKey('treinos.id'))
+    exercicio_id = Column(Integer, ForeignKey('exercicios.id'))
+
+    status = Column(String, default='ativo')  # entregue, pendente, etc.
+    series = Column(Integer, nullable=True)
+    repeticoes = Column(Integer, nullable=True)
+    tempo = Column(Integer, nullable=True)
+    peso = Column(Float, nullable=True)
+    intervalo = Column(Float, nullable=True)
+    data_prescricao = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
+
+    treino = relationship("Treino", back_populates="exercicios_prescritos")
+    exercicio = relationship("Exercicio", back_populates="exercicios_prescritos")
+
 class QuestionarioDor(Base):
     __tablename__ = 'questionario_dor'
     
@@ -90,40 +90,32 @@ class QuestionarioDor(Base):
     
     usuario_id = Column(Integer, ForeignKey('usuarios.id')) 
     
-    data = Column(Date, default=date.today)
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
     pre_pos_treino = Column(String(20), unique=False, nullable=True)
-    local = Column(Integer, unique=False, nullable=True)
+    local = Column(ARRAY(Integer), unique=False, nullable=True)
     intensidade = Column(Integer, unique=False, nullable=True)
     
     usuario = relationship('Usuario', back_populates='questionario')
-    
+
 class ControleMedida(Base):
     __tablename__ = 'controle_medidas'
 
     id = Column(Integer, primary_key=True)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    data = Column(Date, default=date.today)
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
     peso_corporal = Column(Float)
     altura = Column(Float)
 
     usuario = relationship("Usuario", back_populates="medidas")
+
+class ControleAcesso(Base):
+  __tablename__ = 'controle_acessos'
+
+  id = Column(Integer, primary_key=True)
+  usuario_id = Column(Integer, ForeignKey('usuarios.id'))
+  data_acesso = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
+
+  usuario = relationship("Usuario", back_populates="controle_acessos")
     
 # Cria a tabela se ainda não existir
 Base.metadata.create_all(bind=engine)
-
-# conn = "sqlite:///db.db"
-
-# engine = create_engine(conn, echo=True)
-# Session = sessionmaker(bind=engine)
-# Session = Session()
-# Base = declarative_base()
-
-# class Usuario(Base):
-#     __tablename__ = 'usuarios'
-    
-#     id = Column(Integer, primary_key=True)
-#     nome = Column(String(100))
-#     email = Column(String(100))
-#     senha = Column(String(100)) 
-    
-# Base.metadata.create_all(engine)
