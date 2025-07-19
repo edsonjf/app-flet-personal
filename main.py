@@ -99,7 +99,7 @@ def main(page: ft.Page): # Alterado para async def
                             v = df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)]['Arquivo'].values
                             item['Gif'] = v[0]
                             col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}".title(), size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
-                            row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"assets/gifs/{x['Gif']}" if 'Gif' in x else None, page=page) 
+                            row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"gifs/{x['Gif']}" if 'Gif' in x else None, page=page) 
                                                 for x in exercicios_series_repeticoes]
                 else:
                     exercicios_series_repeticoes = []
