@@ -518,7 +518,7 @@ def main(page): # Alterado para async def
                                     controls=[
                                         ft.Column(
                                             expand=True,
-                                            scroll=True,
+                                            # scroll=True,
                                             col={"xs": 12, "sm": 8, "md": 8},
                                             controls=[
                                                 ft.Image(src='/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
@@ -526,7 +526,7 @@ def main(page): # Alterado para async def
                                         ),
                                         ft.Column(
                                             expand=True,
-                                            scroll=True,
+                                            # scroll=True,
                                             col={"xs": 12, "sm": 4, "md": 4},
                                             controls=[
                                                 form1,
