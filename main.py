@@ -266,8 +266,10 @@ def main(page): # Alterado para async def
                     actions=[
                         ft.Row(
                             spacing=15,
+                            wrap=True,
                             controls=[
-                                ft.ElevatedButton('Questionários', on_click= lambda _: page.go('/questionario')),
+                                ft.ElevatedButton('Form Dor', on_click= lambda _: page.go('/questionario')),
+                                ft.ElevatedButton('Form Intensidade', on_click= lambda _: page.go('/questionario-1')),
                                 ft.ElevatedButton("Sair", on_click=logout),
                             ],
                         )
@@ -508,12 +510,71 @@ def main(page): # Alterado para async def
         page.update()
     enviar_pse_button = ft.ElevatedButton("Enviar", on_click=enviar_pse, height=30, width=100, expand=False,)
     
-    tab1 = ft.Tab(
-        text='Formulário Sentimento de Dor',
-        content=ft.Container(
-                            expand=True, 
-                            # alignment=ft.MainAxisAlignment.CENTER,
-                            content=ft.ResponsiveRow(
+    # tab1 = ft.Tab(
+    #     text='Formulário Sentimento de Dor',
+    #     content=ft.Container(
+    #                         expand=True, 
+    #                         # alignment=ft.MainAxisAlignment.CENTER,
+    #                         content=,
+    #                     )
+    #                 )
+                 
+    
+    # tab2 = ft.Tab(
+    #     text='Formulário Percepção Intensidade do Treino',
+    #     content= ft.Container(
+    #                 expand=True,
+    #                 content=
+                    
+    #     )
+    # )
+    
+    # tabs = ft.Tabs(
+    #     selected_index= 0,
+    #     animation_duration= 300,
+    #     tab_alignment = ft.TabAlignment.CENTER,
+    #     indicator_color = None,
+    #     label_color = None,
+    #     unselected_label_color = None,
+    #     divider_color = None,
+    #     scrollable = True,
+    #     height = None,
+    #     width = None,
+    #     expand = True,
+    #     on_change = None,
+    #     overlay_color = None,
+    #     tabs=[
+    #         tab1,
+    #         tab2
+    #     ]
+    # )
+    
+    def QuestionarioView():
+        
+        return ft.View(
+                    route="/questionario",
+                    spacing=20,
+                    scroll='auto',
+                    padding=30,
+                    controls=[
+                        ft.AppBar(
+                        title=ft.Text("Form Dor", weight=ft.FontWeight.BOLD),
+                        bgcolor=ft.Colors.BLUE_GREY_700, 
+                        center_title=True,
+                        actions=[
+                            ft.Row(
+                                spacing=15,
+                                alignment='end',
+                                controls=[
+                                    ft.ElevatedButton('Página Inicial', on_click= lambda _: page.go('/')),
+                                    ft.ElevatedButton('Form Intensidade', on_click= lambda _: page.go('/questionario-1')),
+                                    ft.ElevatedButton("Sair", on_click=logout),
+                                ]
+                            )
+                            
+                        ]
+                        ),
+                        ft.ResponsiveRow(
                                     # expand=True,
                                     # col={"xs":12, "sm":6, "md":6},
                                     controls=[
@@ -532,16 +593,36 @@ def main(page): # Alterado para async def
                                             ]
                                         )
                                     ]
-                                ),
-                        )
-                    )
-                 
-    
-    tab2 = ft.Tab(
-        text='Formulário Percepção Intensidade do Treino',
-        content= ft.Container(
-                    expand=True,
-                    content=ft.ResponsiveRow(
+                                )
+                    ]
+                )
+        
+    def QuestionarioView1():
+        
+        return ft.View(
+                    route="/questionario-1",
+                    spacing=20,
+                    scroll='auto',
+                    padding=30,
+                    controls=[
+                        ft.AppBar(
+                        title=ft.Text("Form Intensidade", weight=ft.FontWeight.BOLD),
+                        bgcolor=ft.Colors.BLUE_GREY_700, 
+                        center_title=True,
+                        actions=[
+                            ft.Row(
+                                spacing=15,
+                                alignment='end',
+                                controls=[
+                                    ft.ElevatedButton('Página Inicial', on_click= lambda _: page.go('/')),
+                                    ft.ElevatedButton('Form Dor', on_click= lambda _: page.go('/questionario')),
+                                    ft.ElevatedButton("Sair", on_click=logout),
+                                ]
+                            )
+                            
+                        ]
+                        ),
+                        ft.ResponsiveRow(
                             controls=[
                                 ft.Container(
                                     # expand=True,
@@ -559,60 +640,6 @@ def main(page): # Alterado para async def
                                             ]
                                      ),
                                 
-                            ]
-                        )
-                    
-        )
-    )
-    
-    tabs = ft.Tabs(
-        selected_index= 0,
-        animation_duration= 300,
-        tab_alignment = ft.TabAlignment.CENTER,
-        indicator_color = None,
-        label_color = None,
-        unselected_label_color = None,
-        divider_color = None,
-        scrollable = True,
-        height = None,
-        width = None,
-        expand = True,
-        on_change = None,
-        overlay_color = None,
-        tabs=[
-            tab1,
-            tab2
-        ]
-    )
-    
-    def QuestionarioView():
-        
-        return ft.View(
-                    route="/questionario",
-                    spacing=20,
-                    scroll='auto',
-                    padding=30,
-                    controls=[
-                        ft.AppBar(
-                        title=ft.Text("Questionários", weight=ft.FontWeight.BOLD),
-                        bgcolor=ft.Colors.BLUE_GREY_700, 
-                        center_title=True,
-                        actions=[
-                            ft.Row(
-                                spacing=15,
-                                alignment='end',
-                                controls=[
-                                    ft.ElevatedButton('Página Inicial', on_click= lambda _: page.go('/')),
-                                    ft.ElevatedButton("Sair", on_click=logout),
-                                ]
-                            )
-                            
-                        ]
-                        ),
-                        ft.Column(
-                            expand=True,
-                            controls=[
-                                tabs
                             ]
                         )
                     ]
@@ -638,6 +665,8 @@ def main(page): # Alterado para async def
             page.views.append(home())
         elif page.route == '/questionario':
             page.views.append(QuestionarioView())
+        elif page.route == '/questionario-1':
+            page.views.append(QuestionarioView1())
         page.update()
     
     page.on_route_change = route_change
