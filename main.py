@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, ControleAcesso
 from funcoes import df_gifs, criar_card
 
-def main(page: ft.Page): # Alterado para async def
+def main(page): # Alterado para async def
     page.vertical_alignment = "stretch"
     page.horizontal_alignment = "stretch"
     page.scroll = ft.ScrollMode.AUTO
@@ -100,14 +100,14 @@ def main(page: ft.Page): # Alterado para async def
     
     # Referência ao botão para poder atualizá-lo depois
     play_button = ft.IconButton(
-        icon=ft.icons.PLAY_CIRCLE,
+        icon=ft.Icons.PLAY_CIRCLE,
         icon_size=40,
         tooltip="Play",
         icon_color=ft.Colors.GREEN
     )
     
     stop_button = ft.IconButton(
-        icon=ft.icons.STOP_CIRCLE,
+        icon=ft.Icons.STOP_CIRCLE,
         icon_size=40,
         tooltip="Stop",
         icon_color=ft.Colors.RED,
@@ -525,7 +525,7 @@ def main(page: ft.Page): # Alterado para async def
                                         ),
                                         ft.Column(
                                             scroll=True,
-                                            col={"xs": 12, "sm": 4, "md": 6},
+                                            col={"xs": 12, "sm": 4, "md": 4},
                                             controls=[
                                                 form1,
                                                 enviar_button,
@@ -548,7 +548,7 @@ def main(page: ft.Page): # Alterado para async def
                                     height=500,
                                             col={"xs":12, "sm":8, "md":6},
                                             controls= [
-                                                ft.Image(src="Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
+                                                ft.Image(src="/Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
                                                 ] 
                                         ),
                                 ft.Column(
