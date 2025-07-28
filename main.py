@@ -608,7 +608,7 @@ def main(page): # Alterado para async def
                             
                         ]
                         ),
-                        ft.Column(
+                        ft.Row(
                             expand=True,
                             controls=[
                                 tabs
