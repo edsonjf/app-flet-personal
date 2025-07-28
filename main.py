@@ -4,6 +4,7 @@ from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, Controle
 from funcoes import df_gifs, criar_card
 
 def main(page): # Alterado para async def
+    page.scroll = ft.ScrollMode.AUTO
     page.vertical_alignment = "stretch"
     page.horizontal_alignment = "stretch"
     
@@ -551,7 +552,7 @@ def main(page): # Alterado para async def
                                     # height=500,
                                             col={"xs":12, "sm":10, "md":9},
                                             controls= [
-                                                ft.Image(src="Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN, height=500)
+                                                ft.Image(src="/Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
                                                 ] 
                                         ),
                                 ft.Column(
