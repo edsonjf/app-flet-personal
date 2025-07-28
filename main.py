@@ -1,6 +1,6 @@
 import flet as ft
-import os
-from models import Usuario, SessionLocal, Treino, QuestionarioDor, ExercicioPrescrito
+from datetime import datetime, timezone
+from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, ControleAcesso
 from funcoes import df_gifs, criar_card
 
 def main(page: ft.Page): # Alterado para async def
@@ -13,6 +13,12 @@ def main(page: ft.Page): # Alterado para async def
         page.session.set('current_username', None)
     if 'usuario_id' not in page.session.get_keys():
         page.session.set('usuario_id', None)
+    if 'treino_id' not in page.session.get_keys():
+        page.session.set('treino_id', None)
+    if 'playTreino' not in page.session.get_keys():
+        page.session.set('playTreino', None)
+    if 'stopTreino' not in page.session.get_keys():
+        page.session.set('stopTreino', None)
         
     email_field = ft.TextField(label='Email', width=300)
     senha_field = ft.TextField(label='Senha', password=True, can_reveal_password=True, width=300)
@@ -61,11 +67,132 @@ def main(page: ft.Page): # Alterado para async def
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
     
+    def logout(e):
+        page.views.clear()
+        # page.add(ft.Text("Você saiu. Até logo!"))
+        page.go('/login')
+    
+    def salvar_horario_treino(usuario_id, treino_id: int | None=None):
+        inicio = page.session.get('playTreino')
+        fim = page.session.get('stopTreino')
+        with SessionLocal() as session:
+            horarios = ControleAcesso(
+                    usuario_id=usuario_id,
+                    treino_id=treino_id,
+                    treino_inicio=inicio,
+                    treino_fim=fim
+                )
+            try:
+                session.add(horarios)
+                session.commit()
+            except:
+                session.rollback()
+                    
+     
     def tem_Exercicios(treino):
         if treino.exercicios_prescritos:
             return True
         else:
             return False 
+    ##################################################################
+    is_playing = False
+    
+    # Referência ao botão para poder atualizá-lo depois
+    play_button = ft.IconButton(
+        icon=ft.icons.PLAY_CIRCLE,
+        icon_size=40,
+        tooltip="Play",
+        icon_color=ft.Colors.GREEN
+    )
+    
+    stop_button = ft.IconButton(
+        icon=ft.icons.STOP_CIRCLE,
+        icon_size=40,
+        tooltip="Stop",
+        icon_color=ft.Colors.RED,
+        disabled=True
+    )
+    
+    txt2 = ft.Text('Treino não iniciado')
+    row2 = ft.Row()
+    row2.disabled=True
+    
+    def data_agora(e):
+        agora = datetime.now()
+        # inicio.value = f"Iniciado em: {agora.strftime('%d/%m/%Y %H:%M:%S')} (UTC)"
+        page.session.set('playTreino', agora.isoformat())
+        # p_session.value = page.session.get('playTreino')
+        page.update()
+    def fim_treino(e):
+        agora = datetime.now()
+        page.session.set('stopTreino', agora.isoformat())
+        page.update()
+
+    def toggle_play_pause(e):
+        nonlocal is_playing
+        
+        is_playing = not is_playing
+        usuario_id=page.session.get('usuario_id')
+        treino_id=page.session.get('treino_id')
+        
+        if is_playing:
+            # play_button.icon = ft.icons.PAUSE
+            # play_button.tooltip = "Pause"
+            play_button.icon_color = ft.Colors.RED
+            play_button.disabled = True
+            stop_button.icon_color = ft.Colors.GREEN
+            stop_button.disabled = False # ativa o botão
+            row2.disabled = False
+            txt2.value = 'Treino em andamento!'
+            data_agora(e)
+        else:
+            play_button.icon_color = ft.Colors.GREEN
+            play_button.disabled = False
+            stop_button.icon_color = ft.Colors.RED
+            stop_button.disabled = True
+            row2.disabled = True
+            txt2.value = 'Treino finalizado!'
+            fim_treino(e)
+            salvar_horario_treino(usuario_id=usuario_id, treino_id=treino_id)
+            page.close(dlg_modal)
+        page.update()
+    
+    dlg_modal = ft.AlertDialog(
+        modal=False,
+        title=ft.Text("Finalizar Treino"),
+        content=ft.Text("Você quer finalizar o treino?"),
+        actions=[
+            ft.TextButton("Sim", on_click=lambda e: toggle_play_pause(e)),
+            ft.TextButton("Não", on_click=lambda e: page.close(dlg_modal)),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+        # on_dismiss=lambda e: print("Modal dialog dismissed!"),
+    )
+    
+    def open_dlg(e):
+        page.open(dlg_modal)
+    
+    play_button.on_click = toggle_play_pause
+    stop_button.on_click = open_dlg
+    #####################################################################
+    # check_box_progress = [ft.Checkbox(label=f"{i}", value=False) for i in range(10)]
+    # progress_bar = ft.ProgressBar(width=200, value=0)
+    # text_progress = ft.Text("Exercícios: 0%")
+    
+    # def atualizar_progresso(e):
+    #     total = len(check_box_progress)
+    #     feitos = sum(1 for cb in check_box_progress if cb.value)
+    #     percentual = feitos / total
+
+    #     progress_bar.value = percentual
+    #     text_progress.value = f"Exercícios: {int(percentual * 100)}%" if int(percentual * 100) != 100 else 'Treino Concluído!'
+    #     page.update()
+
+    # # Conectar cada checkbox ao evento de atualização
+    # for cb in check_box_progress:
+    #     cb.on_change = atualizar_progresso
+    
+    ######################################################################
             
     def home():
         usuario_id = page.session.get('usuario_id')
@@ -73,7 +200,7 @@ def main(page: ft.Page): # Alterado para async def
         col_lista_treinos = ft.Column()
         # col_lista_treinos.scroll = ft.ScrollMode.AUTO
         texto = ft.Text()
-        row2 = ft.Row()
+        # row2 = ft.Row()
         row2.height = page.height * 0.5
         row2.scroll = 'auto'
         
@@ -87,19 +214,32 @@ def main(page: ft.Page): # Alterado para async def
             dropdown_selected = str(e.control.value)
             with SessionLocal() as db:
                 treino_selected = db.query(Treino).filter_by(usuario_id=usuario_id, titulo=dropdown_selected).order_by(Treino.data.desc()).first()
-            
+                
                 texto.value = dropdown_selected
             
-                # if tem_Exercicios(treino=treino_selected):
+                if treino_selected.id:
+                    page.session.set('treino_id', treino_selected.id)
                 if treino_selected.exercicios_prescritos:
                     # Achatar a lista de exercícios e criar Texts
-                    exercicios_series_repeticoes = [{'Nome':x.exercicio.nome, 'Séries': x.series, 'Repetições': x.repeticoes} for x in treino_selected.exercicios_prescritos]
+                    exercicios_series_repeticoes = [{'Nome':x.exercicio.nome, 'Séries': x.series, 'Repetições': x.repeticoes,
+                                            'exercicio_id':x.exercicio_id, 'treino_id':x.treino_id,
+                                            'usuario_id':x.treino.usuario.id}
+                                            for x in treino_selected.exercicios_prescritos]
                     for item in exercicios_series_repeticoes:
                         if not df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)].empty:
                             v = df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)]['Arquivo'].values
                             item['Gif'] = v[0]
                             col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}".title(), size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
-                            row2.controls = [criar_card(nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], imagem_url=f"gifs/{x['Gif']}" if 'Gif' in x else None, page=page) 
+                            row2.controls = [criar_card(
+                                                nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], 
+                                                exercicio_id=x['exercicio_id'], treino_id=x['treino_id'], 
+                                                usuario_id=x['usuario_id'],
+                                                botao_play=play_button, imagem_url=f"gifs/{x['Gif']}" 
+                                                if 'Gif' in x else None,
+                                                # usuario_id=usuario.id, treino_id=None, exercicio_id=,
+                                                page=page, 
+                                                # controle=controle, coluna1=coluna1, botao_salvar=botao_salvar
+                                                ) 
                                                 for x in exercicios_series_repeticoes]
                 else:
                     exercicios_series_repeticoes = []
@@ -125,8 +265,8 @@ def main(page: ft.Page): # Alterado para async def
                         ft.Row(
                             spacing=15,
                             controls=[
-                                ft.ElevatedButton('Questionario', on_click= lambda _: page.go('/questionario')),
-                                ft.ElevatedButton("Sair", on_click=lambda _: page.go('/login')),
+                                ft.ElevatedButton('Questionários', on_click= lambda _: page.go('/questionario')),
+                                ft.ElevatedButton("Sair", on_click=logout),
                             ],
                         )
                     ]
@@ -155,11 +295,23 @@ def main(page: ft.Page): # Alterado para async def
                             controls=[
                                 ft.Container(
                                         # bgcolor=ft.Colors.BLUE_100,
-                                        height=150,
+                                        height=180,
                                         col={"xs": 12, "sm": 5, "md": 5},  # 100% em telas pequenas, 50% em médias, 33% em grandes
                                         content=ft.Column(
+                                            alignment=ft.MainAxisAlignment.CENTER,
                                                     controls=[
-                                                        dropdown1
+                                                        ft.Row(
+                                                            controls=[dropdown1]),
+                                                        # ft.Row(
+                                                        #     controls=[
+                                                        #         progress_bar,
+                                                        #         text_progress,]),
+                                                        ft.Column(
+                                                            controls=[
+                                                                ft.Text('Iniciar/Finalizar treino'),
+                                                                ft.Row([play_button, stop_button,]),
+                                                                txt2
+                                                                ]),
                                                 ]
                                             )
                                         ),
@@ -211,10 +363,12 @@ def main(page: ft.Page): # Alterado para async def
     def radio_item(e):
         radio_group.value = e.control.value
         page.update()
+    
     radio_group = ft.RadioGroup(
         content=ft.Row([ft.Radio(value='Pré', label="Pré"), ft.Radio(value='Pós', label='Pós')]),
         on_change=radio_item
     )
+    
     grid1 = ft.GridView(
         expand=True,
         # runs_count=8,
@@ -298,6 +452,138 @@ def main(page: ft.Page): # Alterado para async def
 
         resultado.update()
     enviar_button = ft.ElevatedButton("Enviar", on_click=enviar)
+    ##############################
+    radio_text_pse = ft.Text()
+
+    def radio_item_pse(e):
+        radio_text_pse.value = e.control.value
+        page.update()
+
+    radio_group_pse = ft.RadioGroup(
+        content=ft.Column(
+            alignment=ft.MainAxisAlignment.CENTER,
+            controls=[
+                ft.Radio(value=str(x), label=f"{x}") for x in range(11)
+            ]
+        ),
+        on_change=radio_item_pse
+    )
+    
+    def limpa_form_pse():
+        radio_group_pse.value = None
+        page.update()
+    
+    alerta_pse = ft.AlertDialog(
+        title='Preencher campo!'
+    )
+    def alerta_form_pse():
+        page.open(alerta_pse)
+        page.update()
+        
+    def enviar_pse(e):
+        usuario_id = page.session.get('usuario_id')
+        
+        pse_treino = radio_group_pse.value
+        
+        if not pse_treino:
+            alerta_form_pse()
+        else:
+            with SessionLocal() as db:
+                try:
+                    resposta = Pse(
+                    usuario_id = usuario_id,
+                    # treino_id = None,
+                    intensidade = int(pse_treino)
+                    )
+                    db.add(resposta)
+                    db.commit()
+                except:
+                    db.rollback()
+            page.open(form_alerta)
+            # 🔁 Recriar os dropdowns para limpá-los visualmente
+            limpa_form_pse()
+
+        page.update()
+    enviar_pse_button = ft.ElevatedButton("Enviar", on_click=enviar_pse, height=30, width=100, expand=False,)
+    
+    tab1 = ft.Tab(
+        text='Formulário Sentimento de Dor',
+        content=ft.Container(
+                            expand=True, 
+                            # alignment=ft.MainAxisAlignment.CENTER,
+                            content=ft.ResponsiveRow(
+                                    # expand=True,
+                                    # col={"xs":12, "sm":6, "md":6},
+                                    controls=[
+                                        ft.Column(
+                                            scroll=True,
+                                            col={"xs": 12, "sm": 8, "md": 8},
+                                            controls=[
+                                                ft.Image(src='/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
+                                            ]
+                                        ),
+                                        ft.Column(
+                                            scroll=True,
+                                            col={"xs": 12, "sm": 4, "md": 4},
+                                            controls=[
+                                                form1,
+                                                enviar_button,
+                                                resultado
+                                            ]
+                                        )
+                                    ]
+                                ),
+                        )
+                    )
+                 
+    
+    tab2 = ft.Tab(
+        text='Formulário Percepção Intensidade do Treino',
+        content= ft.Container(
+                    # expand=True,
+                    content=ft.ResponsiveRow(
+                            controls=[
+                                ft.Column(
+                                    # height=500,
+                                            col={"xs":12, "sm":10, "md":9},
+                                            controls= [
+                                                ft.Image(src="Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN, height=500)
+                                                ] 
+                                        ),
+                                ft.Column(
+                                    # height=500,
+                                    col={"xs":6, "sm":2, "md":3},
+                                    controls=[
+                                                radio_group_pse,
+                                                enviar_pse_button
+                                            ]
+                                     ),
+                                
+                            ]
+                        )
+                    
+        )
+    )
+    
+    tabs = ft.Tabs(
+        selected_index= 0,
+        animation_duration= 300,
+        tab_alignment = ft.TabAlignment.CENTER,
+        indicator_color = None,
+        label_color = None,
+        unselected_label_color = None,
+        divider_color = None,
+        scrollable = False,
+        height = None,
+        width = None,
+        expand = False,
+        on_change = None,
+        overlay_color = None,
+        tabs=[
+            tab1,
+            tab2
+        ]
+    )
     
     def QuestionarioView():
         
@@ -308,7 +594,7 @@ def main(page: ft.Page): # Alterado para async def
                     padding=30,
                     controls=[
                         ft.AppBar(
-                        title=ft.Text("Questionário", weight=ft.FontWeight.BOLD),
+                        title=ft.Text("Questionários", weight=ft.FontWeight.BOLD),
                         bgcolor=ft.Colors.BLUE_GREY_700, 
                         center_title=True,
                         actions=[
@@ -317,52 +603,13 @@ def main(page: ft.Page): # Alterado para async def
                                 alignment='end',
                                 controls=[
                                     ft.ElevatedButton('Página Inicial', on_click= lambda _: page.go('/')),
-                                    ft.ElevatedButton("Sair", on_click=lambda _: page.go('/login')),
+                                    ft.ElevatedButton("Sair", on_click=logout),
                                 ]
                             )
                             
                         ]
                         ),
-                        ft.Column(
-                            expand=True,
-                            controls=[
-                                ft.ResponsiveRow(
-                                    expand=True,
-                                    alignment=ft.MainAxisAlignment.CENTER,
-                                    controls=[
-                                        ft.Container(
-                                            col={"xs":12, "sm":6, "md":4},
-                                            # bgcolor=ft.Colors.AMBER_500,
-                                            content=ft.Text('Formulário de dor!', weight='bold', size=28, text_align='center'),
-                                        )
-                                        
-                                    ]
-                                ),
-                                ft.ResponsiveRow(
-                                    expand=True,
-                                    alignment=ft.MainAxisAlignment.CENTER,
-                                    controls=[
-                                        ft.Container(
-                                            col={"xs":12, "sm":8, "md":6},
-                                            content=ft.Image(src='/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
-                                        ),
-                                        ft.Container(
-                                            col={"xs":10, "sm":3, "md":5},
-                                            content=ft.Column(
-                                                expand=True,
-                                                controls=[
-                                                    form1,
-                                                    enviar_button,
-                                                    resultado
-                                                ]
-                                            )
-                                        ),
-                                        
-                                    ]
-                                ),
-                                
-                            ]
-                        ),
+                        tabs
                     ]
                 )
                 

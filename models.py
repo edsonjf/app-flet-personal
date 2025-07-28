@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Float, Date, ARRAY, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-from datetime import datetime
+from datetime import datetime, timezone
 import pytz
 import os
 import psycopg2
@@ -40,19 +40,23 @@ class Usuario(Base):
     questionario = relationship('QuestionarioDor', back_populates='usuario')
     medidas = relationship("ControleMedida", back_populates="usuario")
     controle_acessos = relationship("ControleAcesso", back_populates="usuario")
+    pse = relationship("Pse", back_populates="usuario")
 
 class Treino(Base):
     __tablename__ = 'treinos'
 
     id = Column(Integer, primary_key=True)
     titulo = Column(String, nullable=False)
-    data = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     descricao = Column(String)
 
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
 
     usuario = relationship("Usuario", back_populates="treinos")
     exercicios_prescritos = relationship("ExercicioPrescrito", back_populates="treino")
+    treinos_realizados = relationship("TreinoRealizado", back_populates="treino")
+    controle_acessos = relationship("ControleAcesso", back_populates="treino")
+    pse = relationship("Pse", back_populates="treino")
 
 class Exercicio(Base):
     __tablename__ = 'exercicios'
@@ -75,10 +79,10 @@ class ExercicioPrescrito(Base):
     status = Column(String, default='ativo')  # entregue, pendente, etc.
     series = Column(Integer, nullable=True)
     repeticoes = Column(Integer, nullable=True)
-    tempo = Column(Integer, nullable=True)
+    tempo = Column(Float, nullable=True)
     peso = Column(Float, nullable=True)
     intervalo = Column(Float, nullable=True)
-    data_prescricao = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
+    data_prescricao = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     treino = relationship("Treino", back_populates="exercicios_prescritos")
     exercicio = relationship("Exercicio", back_populates="exercicios_prescritos")
@@ -102,7 +106,7 @@ class ControleMedida(Base):
 
     id = Column(Integer, primary_key=True)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    data = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     peso_corporal = Column(Float)
     altura = Column(Float)
 
@@ -113,9 +117,41 @@ class ControleAcesso(Base):
 
   id = Column(Integer, primary_key=True)
   usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-  data_acesso = Column(DateTime(timezone=True), default=lambda: datetime.now(pytz.timezone("America/Sao_Paulo")))
-
+  treino_id = Column(Integer, ForeignKey('treinos.id'))
+  data_acesso = Column(DateTime, default=None)
+  treino_inicio = Column(DateTime,default=None)
+  treino_fim = Column(DateTime,default=None)
+  
   usuario = relationship("Usuario", back_populates="controle_acessos")
+  treino = relationship("Treino", back_populates="controle_acessos")
+  
+class TreinoRealizado(Base):
+  __tablename__ = 'treinos_realizados'
+
+  id = Column(Integer, primary_key=True)
+  usuario_id = Column(Integer, ForeignKey('usuarios.id'))
+  treino_id = Column(Integer, ForeignKey('treinos.id'))
+  exercicio_id = Column(Integer, ForeignKey('exercicios.id'))
+#   exercicio_nome = Column(String(50), nullable=True)
+  serie = Column(Integer, nullable=True)
+  repeticoes = Column(Integer, nullable=True)
+  tempo = Column(Float, nullable=True)
+  carga = Column(Float, nullable=True)
+  data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+  data_fim = Column(DateTime(timezone=True), default=None)
+
+  treino = relationship("Treino", back_populates="treinos_realizados")   
+
+class Pse(Base):
+    __tablename__ = 'tabela_pse'
     
+    id = Column(Integer, primary_key=True)
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
+    treino_id = Column(Integer, ForeignKey('treinos.id'))
+    intensidade = Column(Integer, unique=False, nullable=True)
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    
+    usuario = relationship("Usuario", back_populates="pse")
+    treino = relationship("Treino", back_populates="pse")
 # Cria a tabela se ainda não existir
 Base.metadata.create_all(bind=engine)
