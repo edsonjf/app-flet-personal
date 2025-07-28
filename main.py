@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, ControleAcesso
 from funcoes import df_gifs, criar_card
 
-def main(page: ft.Page): # Alterado para async def
+def main(page): # Alterado para async def
     page.vertical_alignment = "stretch"
     page.horizontal_alignment = "stretch"
     
@@ -99,14 +99,14 @@ def main(page: ft.Page): # Alterado para async def
     
     # Referência ao botão para poder atualizá-lo depois
     play_button = ft.IconButton(
-        icon=ft.icons.PLAY_CIRCLE,
+        icon=ft.Icons.PLAY_CIRCLE,
         icon_size=40,
         tooltip="Play",
         icon_color=ft.Colors.GREEN
     )
     
     stop_button = ft.IconButton(
-        icon=ft.icons.STOP_CIRCLE,
+        icon=ft.Icons.STOP_CIRCLE,
         icon_size=40,
         tooltip="Stop",
         icon_color=ft.Colors.RED,
@@ -136,7 +136,7 @@ def main(page: ft.Page): # Alterado para async def
         treino_id=page.session.get('treino_id')
         
         if is_playing:
-            # play_button.icon = ft.icons.PAUSE
+            # play_button.icon = ft.Icons.PAUSE
             # play_button.tooltip = "Pause"
             play_button.icon_color = ft.Colors.RED
             play_button.disabled = True
@@ -512,10 +512,11 @@ def main(page: ft.Page): # Alterado para async def
                             expand=True, 
                             # alignment=ft.MainAxisAlignment.CENTER,
                             content=ft.ResponsiveRow(
-                                    # expand=True,
+                                    expand=True,
                                     # col={"xs":12, "sm":6, "md":6},
                                     controls=[
                                         ft.Column(
+                                            expand=True,
                                             scroll=True,
                                             col={"xs": 12, "sm": 8, "md": 8},
                                             controls=[
@@ -523,6 +524,7 @@ def main(page: ft.Page): # Alterado para async def
                                             ]
                                         ),
                                         ft.Column(
+                                            expand=True,
                                             scroll=True,
                                             col={"xs": 12, "sm": 4, "md": 4},
                                             controls=[
@@ -540,10 +542,12 @@ def main(page: ft.Page): # Alterado para async def
     tab2 = ft.Tab(
         text='Formulário Percepção Intensidade do Treino',
         content= ft.Container(
-                    # expand=True,
+                    expand=True,
                     content=ft.ResponsiveRow(
+                        expand=True,
                             controls=[
                                 ft.Column(
+                                    expand=True,
                                     # height=500,
                                             col={"xs":12, "sm":10, "md":9},
                                             controls= [
@@ -551,6 +555,7 @@ def main(page: ft.Page): # Alterado para async def
                                                 ] 
                                         ),
                                 ft.Column(
+                                    expand=True,
                                     # height=500,
                                     col={"xs":6, "sm":2, "md":3},
                                     controls=[
@@ -576,7 +581,7 @@ def main(page: ft.Page): # Alterado para async def
         scrollable = False,
         height = None,
         width = None,
-        expand = False,
+        expand = True,
         on_change = None,
         overlay_color = None,
         tabs=[
