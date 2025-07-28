@@ -513,20 +513,16 @@ def main(page): # Alterado para async def
         content=ft.Container(
                             expand=True, 
                             # alignment=ft.MainAxisAlignment.CENTER,
-                            content=ft.Row(
-                                    expand=True,
+                            content=ft.ResponsiveRow(
+                                    # expand=True,
                                     # col={"xs":12, "sm":6, "md":6},
                                     controls=[
-                                        ft.Column(
-                                            expand=True,
-                                            scroll=True,
-                                            # col={"xs": 12, "sm": 8, "md": 8},
-                                            controls=[
-                                                ft.Image(src='assets/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
-                                            ]
+                                        ft.Container(
+                                            # scroll=True,
+                                            col={"xs": 12, "sm": 8, "md": 8},
+                                            content=ft.Image(src='assets/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
                                         ),
                                         ft.Column(
-                                            expand=True,
                                             scroll=True,
                                             col={"xs": 12, "sm": 4, "md": 4},
                                             controls=[
@@ -545,21 +541,17 @@ def main(page): # Alterado para async def
         text='Formulário Percepção Intensidade do Treino',
         content= ft.Container(
                     expand=True,
-                    content=ft.Row(
-                        expand=True,
+                    content=ft.ResponsiveRow(
                             controls=[
-                                ft.Column(
-                                    expand=True,
-                                    # height=500,
-                                            # col={"xs":12, "sm":8, "md":8},
-                                            controls= [
-                                                ft.Image(src="assets/Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
-                                                ] 
+                                ft.Container(
+                                    height=500,
+                                            col={"xs":12, "sm":8, "md":8},
+                                            content=ft.Image(src="assets/Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
+                                                
                                         ),
                                 ft.Column(
-                                    expand=True,
-                                    # height=500,
-                                    # col={"xs":12, "sm":4, "md":4},
+                                    height=500,
+                                    col={"xs":12, "sm":4, "md":4},
                                     controls=[
                                                 radio_group_pse,
                                                 enviar_pse_button
