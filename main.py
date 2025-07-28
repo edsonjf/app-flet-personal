@@ -542,19 +542,19 @@ def main(page): # Alterado para async def
     tab2 = ft.Tab(
         text='Formulário Percepção Intensidade do Treino',
         content= ft.Container(
-                    # expand=True,
+                    expand=True,
                     content=ft.ResponsiveRow(
                             controls=[
                                 ft.Column(
                                     height=500,
-                                            col={"xs":12, "sm":8, "md":6},
+                                            col={"xs":12, "sm":8, "md":8},
                                             controls= [
                                                 ft.Image(src="assets/Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
                                                 ] 
                                         ),
                                 ft.Column(
                                     height=500,
-                                    col={"xs":3, "sm":2, "md":3},
+                                    col={"xs":12, "sm":4, "md":4},
                                     controls=[
                                                 radio_group_pse,
                                                 enviar_pse_button
