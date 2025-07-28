@@ -521,7 +521,7 @@ def main(page): # Alterado para async def
                                             scroll=True,
                                             col={"xs": 12, "sm": 8, "md": 8},
                                             controls=[
-                                                ft.Image(src='assets/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
+                                                ft.Image(src='imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
                                             ]
                                         ),
                                         ft.Column(
@@ -549,7 +549,7 @@ def main(page): # Alterado para async def
                                     height=500,
                                             col={"xs":12, "sm":8, "md":6},
                                             controls= [
-                                                ft.Image(src="assets/Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
+                                                ft.Image(src="Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
                                                 ] 
                                         ),
                                 ft.Column(
