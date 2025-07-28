@@ -572,7 +572,7 @@ def main(page): # Alterado para async def
         label_color = None,
         unselected_label_color = None,
         divider_color = None,
-        scrollable = False,
+        scrollable = True,
         height = None,
         width = None,
         expand = True,
@@ -608,7 +608,7 @@ def main(page): # Alterado para async def
                             
                         ]
                         ),
-                        ft.Row(
+                        ft.Column(
                             expand=True,
                             controls=[
                                 tabs
