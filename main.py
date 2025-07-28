@@ -7,7 +7,7 @@ def main(page): # Alterado para async def
     page.vertical_alignment = "stretch"
     page.horizontal_alignment = "stretch"
     page.scroll = ft.ScrollMode.AUTO
-    page.assets_dir = "assets"
+    # page.assets_dir = "assets"
     
     if 'loggedIn' not in page.session.get_keys():
         page.session.set('loggedIn', False)
@@ -659,4 +659,4 @@ def main(page): # Alterado para async def
 #     ft_app_instance = ft.app(target=main, view=ft.WEB_BROWSER, port=port, host=host)
 
 # Render usa variáveis de ambiente de porta, o Flet cuida disso automaticamente em modo web.
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main, view=ft.WEB_BROWSER, assets_dir="assets")
