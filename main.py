@@ -520,7 +520,7 @@ def main(page): # Alterado para async def
                                         ft.Container(
                                             # scroll=True,
                                             col={"xs": 12, "sm": 8, "md": 8},
-                                            content=ft.Image(src='imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, expand=True)
+                                            content=ft.Image(src='/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, expand=True)
                                         ),
                                         ft.Column(
                                             scroll=True,
@@ -547,7 +547,7 @@ def main(page): # Alterado para async def
                                     # expand=True,
                                     # height=500,
                                             col={"xs":12, "sm":8, "md":8},
-                                            content=ft.Image(src="imagem_pse.jpeg", fit=ft.ImageFit.CONTAIN, expand=True)
+                                            content=ft.Image(src="/imagem_pse.jpeg", fit=ft.ImageFit.CONTAIN, expand=True)
                                         ),
                                 ft.Column(
                                     # height=500,
