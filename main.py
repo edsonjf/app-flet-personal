@@ -520,7 +520,7 @@ def main(page): # Alterado para async def
                                         ft.Container(
                                             # scroll=True,
                                             col={"xs": 12, "sm": 8, "md": 8},
-                                            content=ft.Image(src='assets/imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, )
+                                            content=ft.Image(src='imagem_corpo_numeros.jpeg', fit=ft.ImageFit.CONTAIN, expand=True)
                                         ),
                                         ft.Column(
                                             scroll=True,
@@ -544,13 +544,14 @@ def main(page): # Alterado para async def
                     content=ft.ResponsiveRow(
                             controls=[
                                 ft.Container(
-                                    height=500,
+                                    # expand=True,
+                                    # height=500,
                                             col={"xs":12, "sm":8, "md":8},
-                                            content=ft.Image(src="assets/Imagem pse.jpeg", fit=ft.ImageFit.CONTAIN)
-                                                
+                                            content=ft.Image(src="imagem_pse.jpeg", fit=ft.ImageFit.CONTAIN, expand=True)
                                         ),
                                 ft.Column(
-                                    height=500,
+                                    # height=500,
+                                    expand=True,
                                     col={"xs":12, "sm":4, "md":4},
                                     controls=[
                                                 radio_group_pse,
