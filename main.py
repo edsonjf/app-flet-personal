@@ -69,10 +69,32 @@ def main(page): # Alterado para async def
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
     
-    def logout(e):
-        page.views.clear()
-        # page.add(ft.Text("Você saiu. Até logo!"))
+    dlg_fechar_app = ft.AlertDialog(
+        modal=False,
+        title=ft.Text("Encerrar Sessão"),
+        content=ft.Text("Você quer sair?"),
+        actions=[
+            ft.TextButton("Sim", on_click=lambda e: logout_salvar_treino(e)),
+            ft.TextButton("Não", on_click=lambda e: page.close(dlg_fechar_app)),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+    )
+    
+    def logout_salvar_treino(e):
+        fim_treino(e)
+        salvar_horario_treino(usuario_id=page.session.get('usuario_id'))
+        page.session.clear()
         page.go('/login')
+        page.update()
+        
+    def logout(e):
+        if page.session.get('playTreino'):
+            page.open(dlg_fechar_app)
+        else:
+            page.session.clear()
+            # page.add(ft.Text("Você saiu. Até logo!"))
+            page.go('/login')
+            page.update()
     
     def salvar_horario_treino(usuario_id, treino_id: int | None=None):
         inicio = page.session.get('playTreino')
@@ -89,7 +111,8 @@ def main(page): # Alterado para async def
                 session.commit()
             except:
                 session.rollback()
-                    
+        page.session.set('playTreino', None)
+        # page.session.set('stopTreino', None)
      
     def tem_Exercicios(treino):
         if treino.exercicios_prescritos:
@@ -265,7 +288,7 @@ def main(page): # Alterado para async def
                     center_title=True,
                     actions=[
                         ft.Row(
-                            spacing=15,
+                            spacing=7,
                             wrap=True,
                             controls=[
                                 ft.ElevatedButton('Form Dor', on_click= lambda _: page.go('/questionario')),
@@ -563,7 +586,7 @@ def main(page): # Alterado para async def
                         center_title=True,
                         actions=[
                             ft.Row(
-                                spacing=15,
+                                spacing=7,
                                 alignment='end',
                                 controls=[
                                     ft.ElevatedButton('Página Inicial', on_click= lambda _: page.go('/')),
@@ -611,7 +634,7 @@ def main(page): # Alterado para async def
                         center_title=True,
                         actions=[
                             ft.Row(
-                                spacing=15,
+                                spacing=7,
                                 alignment='end',
                                 controls=[
                                     ft.ElevatedButton('Página Inicial', on_click= lambda _: page.go('/')),
