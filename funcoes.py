@@ -171,8 +171,8 @@ def atualizar_coluna1(e=None):
     
     for i in range(qtd):
         slider = ft.Slider(min=0, max=20, divisions=20, label="{value}")
-        carga = ft.TextField(label="Carga", width=80, input_filter=ft.NumbersOnlyInputFilter(), keyboard_type="number")
-        tempo = ft.TextField(label="Tempo", width=80, input_filter=ft.NumbersOnlyInputFilter(), keyboard_type="number")
+        carga = ft.TextField(label="Carga", width=80, input_filter=ft.NumbersOnlyInputFilter(), keyboard_type="number", autofocus=True)
+        tempo = ft.TextField(label="Tempo", width=80, input_filter=ft.NumbersOnlyInputFilter(), keyboard_type="number", autofocus=True)
 
         # Armazena os widgets
         sliders.append(slider)
