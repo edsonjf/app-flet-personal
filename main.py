@@ -568,6 +568,7 @@ def main(page): # Alterado para async def
     #     ]
     # )
     
+       
     def QuestionarioView():
         
         return ft.View(

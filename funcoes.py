@@ -116,8 +116,8 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo,
                     controls=[
                         ft.Text(nome.title(), style=ft.TextThemeStyle.TITLE_MEDIUM, no_wrap=False, max_lines=2),
                         ft.Text(f"Séries: {series}", size=12, italic=True),
-                        ft.Text(f"Repetições: {repeticoes}", size=12, italic=True),
-                        ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True)
+                        ft.Text(f"Repetições: {repeticoes}", size=12, italic=True) if repeticoes is not None else ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True),
+                        # ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True) if tempo is not None else ft.Text()
                     ],
                 )
                 

@@ -47,7 +47,7 @@ class Treino(Base):
 
     id = Column(Integer, primary_key=True)
     titulo = Column(String, nullable=False)
-    data = Column(DateTime(timezone=True), default=lambda: datetime.now(fuso_br))
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     descricao = Column(String)
 
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
@@ -82,7 +82,7 @@ class ExercicioPrescrito(Base):
     tempo = Column(Float, nullable=True)
     peso = Column(Float, nullable=True)
     intervalo = Column(Float, nullable=True)
-    data_prescricao = Column(DateTime(timezone=True), default=lambda: datetime.now(fuso_br))
+    data_prescricao = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     treino = relationship("Treino", back_populates="exercicios_prescritos")
     exercicio = relationship("Exercicio", back_populates="exercicios_prescritos")
@@ -106,7 +106,7 @@ class ControleMedida(Base):
 
     id = Column(Integer, primary_key=True)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    data = Column(DateTime(timezone=True), default=lambda: datetime.now(fuso_br))
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     peso_corporal = Column(Float)
     altura = Column(Float)
 
@@ -137,7 +137,7 @@ class TreinoRealizado(Base):
   repeticoes = Column(Integer, nullable=True)
   tempo = Column(Float, nullable=True)
   carga = Column(Float, nullable=True)
-  data = Column(DateTime(timezone=True), default=lambda: datetime.now(fuso_br))
+  data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
   data_fim = Column(DateTime(timezone=True), default=None)
 
   treino = relationship("Treino", back_populates="treinos_realizados")   
@@ -149,7 +149,7 @@ class Pse(Base):
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
     treino_id = Column(Integer, ForeignKey('treinos.id'))
     intensidade = Column(Integer, unique=False, nullable=True)
-    data = Column(DateTime(timezone=True), default=lambda: datetime.now(fuso_br))
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     
     usuario = relationship("Usuario", back_populates="pse")
     treino = relationship("Treino", back_populates="pse")
