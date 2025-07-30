@@ -216,9 +216,7 @@ def main(page): # Alterado para async def
     # # Conectar cada checkbox ao evento de atualização
     # for cb in check_box_progress:
     #     cb.on_change = atualizar_progresso
-    
     ######################################################################
-            
     def home():
         usuario_id = page.session.get('usuario_id')
         
@@ -226,7 +224,7 @@ def main(page): # Alterado para async def
         # col_lista_treinos.scroll = ft.ScrollMode.AUTO
         texto = ft.Text()
         # row2 = ft.Row()
-        row2.height = page.height * 0.5
+        row2.height = page.height * 0.7
         row2.scroll = 'auto'
         
         with SessionLocal() as db:
@@ -246,7 +244,7 @@ def main(page): # Alterado para async def
                     page.session.set('treino_id', treino_selected.id)
                 if treino_selected.exercicios_prescritos:
                     # Achatar a lista de exercícios e criar Texts
-                    exercicios_series_repeticoes = [{'Nome':x.exercicio.nome, 'Séries': x.series, 'Repetições': x.repeticoes,
+                    exercicios_series_repeticoes = [{'Nome':x.exercicio.nome, 'Séries': x.series, 'Repetições': x.repeticoes, 'Tempo': x.tempo,
                                             'exercicio_id':x.exercicio_id, 'treino_id':x.treino_id,
                                             'usuario_id':x.treino.usuario.id}
                                             for x in treino_selected.exercicios_prescritos]
@@ -256,7 +254,7 @@ def main(page): # Alterado para async def
                             item['Gif'] = v[0]
                             col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}".title(), size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
                             row2.controls = [criar_card(
-                                                nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], 
+                                                nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], tempo=x['Tempo'],
                                                 exercicio_id=x['exercicio_id'], treino_id=x['treino_id'], 
                                                 usuario_id=x['usuario_id'],
                                                 botao_play=play_button, imagem_url=f"gifs/{x['Gif']}" 
@@ -357,7 +355,6 @@ def main(page): # Alterado para async def
                                                             scroll='auto',
                                                             controls=[col_lista_treinos],
                                                         ),
-                                                        
                                                 ]
                                             )
                                         ),
@@ -371,7 +368,7 @@ def main(page): # Alterado para async def
                             controls=[
                                 ft.Container(
                                         # bgcolor=ft.Colors.BLUE_GREY_300,
-                                        height=250,
+                                        height=430,
                                         col={"xs": 12, "sm": 10, "md": 10},  # 100% em telas pequenas, 50% em médias, 33% em grandes
                                         content=ft.Row(
                                             scroll='auto',
@@ -542,7 +539,6 @@ def main(page): # Alterado para async def
     #                     )
     #                 )
                  
-    
     # tab2 = ft.Tab(
     #     text='Formulário Percepção Intensidade do Treino',
     #     content= ft.Container(

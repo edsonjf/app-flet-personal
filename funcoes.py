@@ -23,7 +23,7 @@ def obter_gifs(id:int, db):
     return gifs
 
 # def criar_card(nome: str, descricao: str, imagem_url: str) -> ft.Card:
-def criar_card(nome: str, series: int, repeticoes:int, 
+def criar_card(nome: str, series: int, repeticoes:int, tempo,
                usuario_id, treino_id, exercicio_id,
                botao_play, imagem_url: str, page) -> ft.Card:
     
@@ -82,13 +82,17 @@ def criar_card(nome: str, series: int, repeticoes:int,
     
     return ft.Card(
         width=250,
+        # height=550,
         expand=True, 
         col={"xs": 10, "sm": 6, "md": 4},
         # elevation=4,
         content=ft.Container(
+            expand=True,
             col={"xs": 12, "sm": 6, "md": 4},
             padding=10,
-            content=ft.Column([
+            content=ft.Column(
+                expand=True,
+                controls=[
                 ft.Row(
                     alignment=ft.MainAxisAlignment.CENTER,
                     # vertical_alignment=ft.MainAxisAlignment.CENTER,
@@ -112,7 +116,8 @@ def criar_card(nome: str, series: int, repeticoes:int,
                     controls=[
                         ft.Text(nome.title(), style=ft.TextThemeStyle.TITLE_MEDIUM, no_wrap=False, max_lines=2),
                         ft.Text(f"Séries: {series}", size=12, italic=True),
-                        ft.Text(f"Repetições: {repeticoes}", size=12, italic=True)
+                        ft.Text(f"Repetições: {repeticoes}", size=12, italic=True),
+                        ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True)
                     ],
                 )
                 
@@ -121,7 +126,8 @@ def criar_card(nome: str, series: int, repeticoes:int,
         # width=page.width * 0.2, 
     )
 
-txt_number = ft.TextField(value="0", width=50, text_align=ft.TextAlign.CENTER, read_only=True)
+txt_number = ft.TextField(value="0", width=50, text_align=ft.TextAlign.CENTER, read_only=True,
+                          keyboard_type="number", input_filter=ft.NumbersOnlyInputFilter(),)
 coluna1 = ft.Column()
 resultados_exibidos = ft.Column() 
 
@@ -165,8 +171,8 @@ def atualizar_coluna1(e=None):
     
     for i in range(qtd):
         slider = ft.Slider(min=0, max=20, divisions=20, label="{value}")
-        carga = ft.TextField(label="Carga", width=80)
-        tempo = ft.TextField(label="Tempo", width=80)
+        carga = ft.TextField(label="Carga", width=80, input_filter=ft.NumbersOnlyInputFilter(), keyboard_type="number")
+        tempo = ft.TextField(label="Tempo", width=80, input_filter=ft.NumbersOnlyInputFilter(), keyboard_type="number")
 
         # Armazena os widgets
         sliders.append(slider)
