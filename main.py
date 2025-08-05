@@ -249,8 +249,8 @@ def main(page): # Alterado para async def
                                             'usuario_id':x.treino.usuario.id}
                                             for x in treino_selected.exercicios_prescritos]
                     for item in exercicios_series_repeticoes:
-                        if not df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)].empty:
-                            v = df_gifs[df_gifs['Arquivo'].str.contains(item['Nome'], case=False, na=False)]['Arquivo'].values
+                        if not df_gifs[df_gifs['Arquivo'].str.lower().str.split('.').str[0]==item['Nome'].lower()].empty:
+                            v = df_gifs[df_gifs['Arquivo'].str.lower().str.split('.').str[0]==item['Nome'].lower()]['Arquivo'].values
                             item['Gif'] = v[0]
                             col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}".title(), size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
                             row2.controls = [criar_card(
