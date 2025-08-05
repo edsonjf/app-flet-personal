@@ -265,8 +265,7 @@ def main(page): # Alterado para async def
                                                 ) 
                                                 for x in exercicios_series_repeticoes]
                 else:
-                    exercicios_series_repeticoes = []
-                
+                    exercicios_series_repeticoes = []                
             page.update()
 
         # Dropdown populado com nomes dos treinos
@@ -566,8 +565,7 @@ def main(page): # Alterado para async def
     #         tab1,
     #         tab2
     #     ]
-    # )
-    
+    # )   
        
     def QuestionarioView():
         
@@ -605,7 +603,7 @@ def main(page): # Alterado para async def
                                         ),
                                         ft.Column(
                                             scroll=True,
-                                            col={"xs": 12, "sm": 4, "md": 4},
+                                            col={"xs": 11, "sm": 3, "md": 3},
                                             controls=[
                                                 form1,
                                                 enviar_button,

@@ -14,8 +14,8 @@ def obter_gifs(id:int, db):
     index = []
     for item in db.query(Treino).filter_by(usuario_id=id).all():
         for exercicio in item.exercicios_prescritos:
-            # print(exercicio.nome)
-            filtro = df_gifs['Arquivo'].str.contains(exercicio.exercicio.nome, case=False, na=False)
+            filtro = df_gifs[df_gifs['Arquivo'].str.lower().str.split('.').str[0]==exercicio.exercicio.nome.lower()]
+            # filtro = df_gifs['Arquivo'].str.contains(fr"\b{exercicio.exercicio.nome}.gif\b", na=False, case=False, regex=True)
             if not df_gifs[filtro].empty:
                 ids = df_gifs[filtro].index.tolist()
                 index.extend(ids)
