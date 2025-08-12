@@ -139,8 +139,19 @@ def main(page): # Alterado para async def
     )
     
     txt2 = ft.Text('Treino não iniciado')
-    row2 = ft.Row()
-    row2.disabled=True
+    # row2 = ft.Row()
+    grid_exercicios =    ft.GridView(
+            expand=True,
+            # runs_count=3,       # Número de colunas
+            max_extent=300,     # Tamanho máximo por item (largura)
+            child_aspect_ratio=0.8,    # Altura maior que largura
+            # child_aspect_ratio=1.0,  # 1.0 = quadrado
+            spacing=10,
+            run_spacing=10,
+            padding=10,
+            disabled=True
+        )
+    # grid_exercicios.disabled=True
     
     def data_agora(e):
         agora = datetime.now()
@@ -167,7 +178,7 @@ def main(page): # Alterado para async def
             play_button.disabled = True
             stop_button.icon_color = ft.Colors.GREEN
             stop_button.disabled = False # ativa o botão
-            row2.disabled = False
+            grid_exercicios.disabled = False
             txt2.value = 'Treino em andamento!'
             data_agora(e)
         else:
@@ -175,7 +186,7 @@ def main(page): # Alterado para async def
             play_button.disabled = False
             stop_button.icon_color = ft.Colors.RED
             stop_button.disabled = True
-            row2.disabled = True
+            grid_exercicios.disabled = True
             txt2.value = 'Treino finalizado!'
             fim_treino(e)
             salvar_horario_treino(usuario_id=usuario_id, treino_id=treino_id)
@@ -224,8 +235,9 @@ def main(page): # Alterado para async def
         # col_lista_treinos.scroll = ft.ScrollMode.AUTO
         texto = ft.Text()
         # row2 = ft.Row()
-        row2.height = page.height * 0.7
-        row2.scroll = 'auto'
+        # row2.height = page.height * 0.7
+        # row2.scroll = 'auto'
+        # grid_exercicios = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True) 
         
         with SessionLocal() as db:
             # Carrega os treinos disponíveis no dropdown
@@ -235,6 +247,7 @@ def main(page): # Alterado para async def
         # Função chamada ao selecionar um item no dropdown
         def dropdown_chama(e):
             dropdown_selected = str(e.control.value)
+            grid_exercicios.controls.clear()
             with SessionLocal() as db:
                 treino_selected = db.query(Treino).filter_by(usuario_id=usuario_id, titulo=dropdown_selected).order_by(Treino.data.desc()).first()
                 
@@ -253,7 +266,8 @@ def main(page): # Alterado para async def
                             v = df_gifs[df_gifs['Arquivo'].str.lower().str.split('.').str[0]==item['Nome'].lower()]['Arquivo'].values
                             item['Gif'] = v[0]
                             col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}".title(), size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
-                            row2.controls = [criar_card(
+                            # row2.controls = [criar_card(
+                            lista_cards = [criar_card(
                                                 nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], tempo=x['Tempo'],
                                                 exercicio_id=x['exercicio_id'], treino_id=x['treino_id'], 
                                                 usuario_id=x['usuario_id'],
@@ -264,8 +278,11 @@ def main(page): # Alterado para async def
                                                 # controle=controle, coluna1=coluna1, botao_salvar=botao_salvar
                                                 ) 
                                                 for x in exercicios_series_repeticoes]
+                            
                 else:
-                    exercicios_series_repeticoes = []                
+                    exercicios_series_repeticoes = [] 
+            for i in lista_cards:
+                grid_exercicios.controls.append(i)
             page.update()
 
         # Dropdown populado com nomes dos treinos
@@ -369,10 +386,11 @@ def main(page): # Alterado para async def
                                         # bgcolor=ft.Colors.BLUE_GREY_300,
                                         height=430,
                                         col={"xs": 12, "sm": 10, "md": 10},  # 100% em telas pequenas, 50% em médias, 33% em grandes
-                                        content=ft.Row(
+                                        content=ft.Column(
                                             scroll='auto',
-                                            controls=[row2]
-                                            ), 
+                                            # controls=[row2],
+                                            controls=[grid_exercicios]
+                                        ), 
                                     ),
                             ] 
                         )

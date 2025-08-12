@@ -14,11 +14,12 @@ def obter_gifs(id:int, db):
     index = []
     for item in db.query(Treino).filter_by(usuario_id=id).all():
         for exercicio in item.exercicios_prescritos:
-            filtro = df_gifs[df_gifs['Arquivo'].str.lower().str.split('.').str[0]==exercicio.exercicio.nome.lower()]
+            index.append(exercicio.id)
+            # filtro = df_gifs[df_gifs['Arquivo'].str.lower().str.split('.').str[0]==exercicio.exercicio.nome.lower()]
             # filtro = df_gifs['Arquivo'].str.contains(fr"\b{exercicio.exercicio.nome}.gif\b", na=False, case=False, regex=True)
-            if not df_gifs[filtro].empty:
-                ids = df_gifs[filtro].index.tolist()
-                index.extend(ids)
+            # if not df_gifs[filtro].empty:
+            #     ids = df_gifs[filtro].index.tolist()
+            #     index.extend(ids)
     gifs = df_gifs.loc[index]['Arquivo'].values.tolist()
     return gifs
 
@@ -81,7 +82,7 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo,
     )
     
     return ft.Card(
-        width=250,
+        width=350,
         # height=550,
         expand=True, 
         col={"xs": 10, "sm": 6, "md": 4},
@@ -101,7 +102,7 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo,
                     controls=[ft.Image(
                         src=imagem_url,
                         # width=page.width * 0.2,
-                        # height=page.height * 0.2,
+                        height=200,
                         fit=ft.ImageFit.CONTAIN, 
                         expand=1, 
                         ),
