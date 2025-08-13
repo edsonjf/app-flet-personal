@@ -90,11 +90,14 @@ def main(page): # Alterado para async def
     def logout(e):
         if page.session.get('playTreino'):
             page.open(dlg_fechar_app)
-        else:
-            page.session.clear()
+        # else:
             # page.add(ft.Text("Você saiu. Até logo!"))
-            page.go('/login')
-            page.update()
+            # page.go('/login')
+        grid_exercicios.controls.clear()
+        page.session.clear()
+        page.clean()         # limpa todos os controles visíveis
+        page.views.clear()   # limpa a pilha de views
+        page.go("/login")         # redireciona para login
     
     def salvar_horario_treino(usuario_id, treino_id: int | None=None):
         inicio = page.session.get('playTreino')
@@ -151,7 +154,6 @@ def main(page): # Alterado para async def
             padding=10,
             disabled=True
         )
-    # grid_exercicios.disabled=True
     
     def data_agora(e):
         agora = datetime.now()
@@ -257,7 +259,7 @@ def main(page): # Alterado para async def
                     page.session.set('treino_id', treino_selected.id)
                 if treino_selected.exercicios_prescritos:
                     # Achatar a lista de exercícios e criar Texts
-                    exercicios_series_repeticoes = [{'Nome':x.exercicio.nome, 'Séries': x.series, 'Repetições': x.repeticoes, 'Tempo': x.tempo,
+                    exercicios_series_repeticoes = [{'Nome':x.exercicio.nome, 'Séries': x.series, 'Repetições': x.repeticoes, 'Tempo': x.tempo, 'Peso': x.peso, 'Intervalo': x.intervalo,
                                             'exercicio_id':x.exercicio_id, 'treino_id':x.treino_id,
                                             'usuario_id':x.treino.usuario.id}
                                             for x in treino_selected.exercicios_prescritos]
@@ -268,7 +270,7 @@ def main(page): # Alterado para async def
                             col_lista_treinos.controls = [ft.Text(f"- {x['Nome']}".title(), size=16, weight='bold') for x in exercicios_series_repeticoes] or [ft.Text("Ainda não existe exrecícios para este treino!", color='red')]
                             # row2.controls = [criar_card(
                             lista_cards = [criar_card(
-                                                nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], tempo=x['Tempo'],
+                                                nome=x['Nome'], series=x['Séries'], repeticoes=x['Repetições'], tempo=x['Tempo'], peso=x['Peso'], intervalo=x['Intervalo'],
                                                 exercicio_id=x['exercicio_id'], treino_id=x['treino_id'], 
                                                 usuario_id=x['usuario_id'],
                                                 botao_play=play_button, imagem_url=f"gifs/{x['Gif']}" 

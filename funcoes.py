@@ -24,7 +24,7 @@ def obter_gifs(id:int, db):
     return gifs
 
 # def criar_card(nome: str, descricao: str, imagem_url: str) -> ft.Card:
-def criar_card(nome: str, series: int, repeticoes:int, tempo,
+def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:float | None, intervalo:float | None,
                usuario_id, treino_id, exercicio_id,
                botao_play, imagem_url: str, page) -> ft.Card:
     
@@ -110,22 +110,18 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo,
                     ],
                     
                 ),
-                ft.Column(
-                    expand=1,
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.MainAxisAlignment.CENTER,
-                    controls=[
-                        ft.Text(nome.title(), style=ft.TextThemeStyle.TITLE_MEDIUM, no_wrap=False, max_lines=2),
-                        ft.Text(f"Séries: {series}", size=12, italic=True),
-                        ft.Text(f"Repetições: {repeticoes}", size=12, italic=True) if repeticoes is not None else ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True),
-                        # ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True) if tempo is not None else ft.Text()
-                    ],
-                )
-                
-            ]),
-        ),
+                ft.Divider(),
+                ft.Text(nome.title(), style=ft.TextThemeStyle.TITLE_MEDIUM, no_wrap=False, max_lines=2),
+                ft.Divider(),
+                ft.Text(f"Séries: {series}", size=12, italic=True),
+                ft.Text(f"Repetições: {repeticoes}", size=12, italic=True) if repeticoes is not None else ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True),
+                ft.Text(f"Peso: {peso} Kg", size=12, italic=True) if peso is not None else ft.Text(),
+                ft.Text(f"Intervalo: {intervalo} minuto(s)", size=12, italic=True) if intervalo is not None else ft.Text()
+            ],
+        )
+    ),
         # width=page.width * 0.2, 
-    )
+)
 
 txt_number = ft.TextField(value="0", width=50, text_align=ft.TextAlign.CENTER, read_only=True,
                           keyboard_type="number", input_filter=ft.NumbersOnlyInputFilter(),)
