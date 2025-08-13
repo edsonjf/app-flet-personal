@@ -82,45 +82,69 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
     )
     
     return ft.Card(
-        width=350,
-        # height=550,
+        width=None,
+        height=None,
         expand=True, 
         col={"xs": 10, "sm": 6, "md": 4},
         # elevation=4,
-        content=ft.Container(
+        content=ft.Column(
             expand=True,
-            col={"xs": 12, "sm": 6, "md": 4},
-            padding=10,
-            content=ft.Column(
-                expand=True,
-                controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    # vertical_alignment=ft.MainAxisAlignment.CENTER,
-                    expand=2,
-                    # scroll='auto',
-                    controls=[ft.Image(
-                        src=imagem_url,
-                        # width=page.width * 0.2,
-                        height=200,
-                        fit=ft.ImageFit.CONTAIN, 
-                        expand=1, 
-                        ),
-                        icon_button
-                    ],
-                    
+            # col={"xs": 12, "sm": 6, "md": 4},
+            # padding=10,
+            controls=[
+                ft.Container(
+                    expand=True,
+                    content=ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        # vertical_alignment=ft.MainAxisAlignment.CENTER,
+                        expand=True,
+                        # scroll='auto',
+                        controls=[ft.Image(
+                            src=imagem_url,
+                            # width=page.width * 0.2,
+                            height=200,
+                            fit=ft.ImageFit.CONTAIN, 
+                            expand=1, 
+                            ),
+                            icon_button
+                        ],
+                    ),
                 ),
-                ft.Divider(),
-                ft.Text(nome.title(), style=ft.TextThemeStyle.TITLE_MEDIUM, no_wrap=False, max_lines=2),
-                ft.Divider(),
-                ft.Text(f"Séries: {series}", size=12, italic=True),
-                ft.Text(f"Repetições: {repeticoes}", size=12, italic=True) if repeticoes is not None else ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True),
-                ft.Text(f"Peso: {peso} Kg", size=12, italic=True) if peso is not None else ft.Text(),
-                ft.Text(f"Intervalo: {intervalo} minuto(s)", size=12, italic=True) if intervalo is not None else ft.Text()
+                ft.Container(
+                    expand=True,
+                    content=ft.Column(
+                        expand=True,
+                        controls=[
+                            ft.Divider(),
+                            ft.Text(nome.title(), style=ft.TextThemeStyle.TITLE_MEDIUM, no_wrap=False, max_lines=2),
+                            ft.Divider(),
+                            ft.Row(
+                                expand=True,
+                                controls=[
+                                    ft.Column(
+                                        expand=True,
+                                        controls=[
+                                            ft.Text(f"Séries: {series}", size=12, italic=True),
+                                            ft.Text(f"Repetições: {repeticoes}", size=12, italic=True) if repeticoes is not None else ft.Text(f"Tempo: {tempo} minuto(s)", size=12, italic=True),
+                                        ]
+                                    ),
+                                    ft.Column(
+                                        expand=True,
+                                        controls=[
+                                            ft.Text(f"Peso: {peso} Kg", size=12, italic=True) if peso is not None else ft.Text(),
+                                            ft.Text(f"Intervalo: {intervalo} minuto(s)", size=12, italic=True) if intervalo is not None else ft.Text()
+                                        ]
+                                    )
+                                ]
+                            ),
+                            
+                        ]
+                    ),
+                    
+                )
             ],
-        )
+            
     ),
-        # width=page.width * 0.2, 
 )
 
 txt_number = ft.TextField(value="0", width=50, text_align=ft.TextAlign.CENTER, read_only=True,

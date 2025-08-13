@@ -143,11 +143,12 @@ def main(page): # Alterado para async def
     
     txt2 = ft.Text('Treino não iniciado')
     # row2 = ft.Row()
-    grid_exercicios =    ft.GridView(
+    grid_exercicios = ft.GridView(
             expand=True,
             # runs_count=3,       # Número de colunas
-            max_extent=300,     # Tamanho máximo por item (largura)
-            child_aspect_ratio=0.8,    # Altura maior que largura
+            max_extent=400,     # Tamanho máximo por item (largura)
+            # child_aspect_ratio=0.8,    # Altura maior que largura
+            height=600,
             # child_aspect_ratio=1.0,  # 1.0 = quadrado
             spacing=10,
             run_spacing=10,
@@ -239,7 +240,6 @@ def main(page): # Alterado para async def
         # row2 = ft.Row()
         # row2.height = page.height * 0.7
         # row2.scroll = 'auto'
-        # grid_exercicios = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True) 
         
         with SessionLocal() as db:
             # Carrega os treinos disponíveis no dropdown
