@@ -38,6 +38,8 @@ def main(page): # Alterado para async def
             user = db.query(Usuario).filter_by(email=email_field.value, senha=senha_field.value).first()
             if user:
                 page.session.set('loggedIn', True)
+                # Salva login no armazenamento local
+                page.client_storage.set("logado", "sim")
                 ft.Text('Bem vindo!', color='green')
                 page.session.set('usuario_id', user.id)
                 page.go('/')
@@ -90,9 +92,8 @@ def main(page): # Alterado para async def
     def logout(e):
         if page.session.get('playTreino'):
             page.open(dlg_fechar_app)
-        # else:
-            # page.add(ft.Text("Você saiu. Até logo!"))
-            # page.go('/login')
+        
+        page.client_storage.set("logado", False) # login no armazenamento local
         grid_exercicios.controls.clear()
         page.session.clear()
         page.clean()         # limpa todos os controles visíveis
@@ -386,9 +387,11 @@ def main(page): # Alterado para async def
                             controls=[
                                 ft.Container(
                                         # bgcolor=ft.Colors.BLUE_GREY_300,
-                                        height=430,
+                                        # height=430,
+                                        expand=True,
                                         col={"xs": 12, "sm": 10, "md": 10},  # 100% em telas pequenas, 50% em médias, 33% em grandes
                                         content=ft.Column(
+                                            expand=True,
                                             scroll='auto',
                                             # controls=[row2],
                                             controls=[grid_exercicios]
@@ -688,14 +691,23 @@ def main(page): # Alterado para async def
     #     page.controls[0].width = page.width
     #     page.update()
     # page.on_resize = on_resize
+    def route_guard():
+        # Se não estiver logado e não estiver na rota de login, redireciona
+        if page.client_storage.get("logado") != "sim" and page.route != "/login":
+            page.go("/login")
+            return True  # rota foi bloqueada/redirecionada
+        return False  # rota liberada
+
     
     def route_change(route):
         page.views.clear()
         
         # Se não estiver logado
-        if not page.session.get('loggedIn') and page.route != '/login':
-            page.go('/login')
-            return
+        # if not page.session.get('loggedIn') and page.route != '/login':
+        #     page.go('/login')
+        #     return
+        if route_guard():
+            return  # Impede a exibição da rota protegida
         
         if page.route == '/login':
             page.views.append(login_page())

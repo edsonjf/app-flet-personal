@@ -38,7 +38,7 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
     )
     
     form = ft.AlertDialog(
-        title=ft.Text("Séries"),
+        title=ft.Text("Registrar Exercício"),
         content=ft.Column(
             expand=True,
             controls=[
