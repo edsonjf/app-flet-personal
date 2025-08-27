@@ -101,7 +101,7 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
                         # scroll='auto',
                         controls=[ft.Image(
                             src=imagem_url,
-                            # width=page.width * 0.2,
+                            error_content=ft.Text("Imagem não encontrada", color="red"),
                             height=200,
                             fit=ft.ImageFit.CONTAIN, 
                             expand=1, 
