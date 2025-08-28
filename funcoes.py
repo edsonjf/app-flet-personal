@@ -30,9 +30,9 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
     
     controle = ft.Row(
         controls=[
-            ft.IconButton(ft.icons.REMOVE, on_click=lambda e: diminuir(e, page)),
+            ft.IconButton(ft.Icons.REMOVE, on_click=lambda e: diminuir(e, page)),
             txt_number,
-            ft.IconButton(ft.icons.ADD, on_click=lambda e:acrescentar(e, page)),
+            ft.IconButton(ft.Icons.ADD, on_click=lambda e:acrescentar(e, page)),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
     )

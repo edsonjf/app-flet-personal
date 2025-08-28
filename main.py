@@ -42,6 +42,7 @@ def main(page): # Alterado para async def
                 page.client_storage.set("logado", "sim")
                 ft.Text('Bem vindo!', color='green')
                 page.session.set('usuario_id', user.id)
+                page.session.set('current_username', user.nome)
                 page.go('/')
             else:
                 page.open(login_alerta)
@@ -245,7 +246,7 @@ def main(page): # Alterado para async def
         with SessionLocal() as db:
             # Carrega os treinos disponíveis no dropdown
             usuario = db.query(Usuario).filter_by(id=usuario_id).first()
-            page.session.set('current_username', usuario.nome)
+            # page.session.set('current_username', usuario.nome)
             nomes_treinos = [x.titulo for x in db.query(Treino).filter_by(usuario_id=usuario_id).all()]
         
         # Função chamada ao selecionar um item no dropdown
@@ -691,14 +692,14 @@ def main(page): # Alterado para async def
     #     page.controls[0].width = page.width
     #     page.update()
     # page.on_resize = on_resize
-    def route_guard():
-        # Se não estiver logado e não estiver na rota de login, redireciona
-        if page.client_storage.get("logado") != "sim" and page.route != "/login":
-            page.go("/login")
-            return True  # rota foi bloqueada/redirecionada
-        return False  # rota liberada
-
-    
+    # def route_guard():
+    #     # Se não estiver logado e não estiver na rota de login, redireciona
+    #     logado = page.client_storage.get("logado")
+    #     if page.session.get('loggedIn') and logado != "sim" and page.route != "/login":
+    #         page.go("/login")
+    #         return True  # rota foi bloqueada/redirecionada
+    #     return False  # rota liberada
+        
     def route_change(route):
         page.views.clear()
         
@@ -706,8 +707,11 @@ def main(page): # Alterado para async def
         # if not page.session.get('loggedIn') and page.route != '/login':
         #     page.go('/login')
         #     return
-        if route_guard():
-            return  # Impede a exibição da rota protegida
+        # if route_guard():
+        #     return  # Impede a exibição da rota protegida
+        if page.client_storage.get('logado') != 'sim' and page.route != '/login':
+            page.go('/login')
+            return
         
         if page.route == '/login':
             page.views.append(login_page())
