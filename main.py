@@ -13,10 +13,12 @@ def main(page): # Alterado para async def
     
     # if 'loggedIn' not in page.session.get_keys():
     #     page.session.set('loggedIn', False)
-    if not page.client_storage.contains_key("logado"):
-        page.client_storage.set('logado', 'nao')
-    if 'current_username' not in page.session.get_keys():
-        page.session.set('current_username', None)
+    if page.client_storage.get("logado"):
+        page.client_storage.set('logado', 'sim')
+    else:
+        page.client_storage.set("logado", "nao")
+    # if 'current_username' not in page.session.get_keys():
+    #     page.session.set('current_username', None)
     # if not page.client_storage.contains_key("usuario_id"):
     #     page.client_storage.set('usuario_id', '0')
     # if 'usuario_id' not in page.session.get_keys():
@@ -48,8 +50,8 @@ def main(page): # Alterado para async def
                 page.client_storage.set("logado", "sim")
                 page.client_storage.set('usuario_id', str(user.id))
                 page.client_storage.set('current_username', user.nome)
-                page.snack_bar = ft.SnackBar(content=ft.Text("Bem vindo!", color="green"))
-                page.snack_bar.open = True
+                # page.snack_bar = ft.SnackBar(content=ft.Text("Bem vindo!", color="green"))
+                # page.snack_bar.open = True
                 page.go('/')
             else:
                 page.open(login_alerta)
@@ -100,7 +102,7 @@ def main(page): # Alterado para async def
     def logout(e):
         if page.session.get('playTreino'):
             page.open(dlg_fechar_app)
-        page.client_storage.clear()
+        page.client_storage.remove("logado")
         # page.client_storage.set('logado', 'nao') # login no armazenamento local
         grid_exercicios.controls.clear()
         page.session.clear()
@@ -252,7 +254,7 @@ def main(page): # Alterado para async def
         
         with SessionLocal() as db:
             # Carrega os treinos disponíveis no dropdown
-            usuario = db.query(Usuario).filter_by(id=usuario_id).first()
+            # usuario = db.query(Usuario).filter_by(id=usuario_id).first()
             # page.session.set('current_username', usuario.nome)
             nomes_treinos = [x.titulo for x in db.query(Treino).filter_by(usuario_id=usuario_id).all()]
         
