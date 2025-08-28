@@ -278,7 +278,6 @@ def main(page): # Alterado para async def
                                                 if 'Gif' in x else None,
                                                 # usuario_id=usuario.id, treino_id=None, exercicio_id=,
                                                 page=page, 
-                                                # controle=controle, coluna1=coluna1, botao_salvar=botao_salvar
                                                 ) 
                                                 for x in exercicios_series_repeticoes]
                             
