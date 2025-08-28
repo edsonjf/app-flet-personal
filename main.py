@@ -43,9 +43,10 @@ def main(page): # Alterado para async def
                 # page.session.set('loggedIn', True)
                 # Salva login no armazenamento local
                 page.client_storage.set("logado", "sim")
-                ft.Text('Bem vindo!', color='green')
                 page.session.set('usuario_id', user.id)
                 page.session.set('current_username', user.nome)
+                page.snack_bar = ft.SnackBar(content=ft.Text("Bem vindo!", color="green"))
+                page.snack_bar.open = True
                 page.go('/')
             else:
                 page.open(login_alerta)
@@ -712,12 +713,15 @@ def main(page): # Alterado para async def
         #     return
         # if route_guard():
         #     return  # Impede a exibição da rota protegida
-        if page.route != '/login':
-            sleep(0.1)
+        try:
             logado = page.client_storage.get('logado')
-            if logado != 'sim':
-                page.go('/login')
-                return
+        except Exception as e:
+            print("Erro ao acessar client_storage:", e)
+            logado = 'nao'
+
+        if page.route != '/login' and logado != 'sim':
+            page.go('/login')
+            return
         
         if page.route == '/login':
             page.views.append(login_page())
