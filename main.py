@@ -245,7 +245,7 @@ def main(page): # Alterado para async def
         with SessionLocal() as db:
             # Carrega os treinos disponíveis no dropdown
             usuario = db.query(Usuario).filter_by(id=usuario_id).first()
-            nome = usuario.nome
+            page.session.set('current_username', usuario.nome)
             nomes_treinos = [x.titulo for x in db.query(Treino).filter_by(usuario_id=usuario_id).all()]
         
         # Função chamada ao selecionar um item no dropdown
@@ -327,7 +327,7 @@ def main(page): # Alterado para async def
                                         # bgcolor=ft.Colors.BLUE_100,
                                         height=50,
                                         col={"xs": 12, "sm": 6, "md": 6},  # 100% em telas pequenas, 50% em médias, 33% em grandes
-                                        content=ft.Text(f"Olá, {nome}!", size=24, weight="bold"),
+                                        content=ft.Text(f"Olá, {page.session.get('current_username')}!", size=24, weight="bold"),
                                     ),
                             ] 
                         ),
