@@ -13,7 +13,7 @@ def main(page): # Alterado para async def
     
     # if 'loggedIn' not in page.session.get_keys():
     #     page.session.set('loggedIn', False)
-    if page.client_storage.get("logado"):
+    if page.client_storage.get("logado") is not None:
         page.client_storage.set('logado', 'sim')
     else:
         page.client_storage.set("logado", "nao")
