@@ -2,6 +2,7 @@ import flet as ft
 from datetime import datetime, timezone
 from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, ControleAcesso
 from funcoes import df_gifs, criar_card
+from time import sleep
 
 def main(page): # Alterado para async def
     page.vertical_alignment = "stretch"
@@ -9,8 +10,10 @@ def main(page): # Alterado para async def
     page.scroll = ft.ScrollMode.AUTO
     # page.assets_dir = "assets"
     
-    if 'loggedIn' not in page.session.get_keys():
-        page.session.set('loggedIn', False)
+    # if 'loggedIn' not in page.session.get_keys():
+    #     page.session.set('loggedIn', False)
+    if page.client_storage.get("logado") is None:
+        page.client_storage.set('logado', 'nao')
     if 'current_username' not in page.session.get_keys():
         page.session.set('current_username', None)
     if 'usuario_id' not in page.session.get_keys():
@@ -37,7 +40,7 @@ def main(page): # Alterado para async def
         with SessionLocal() as db:
             user = db.query(Usuario).filter_by(email=email_field.value, senha=senha_field.value).first()
             if user:
-                page.session.set('loggedIn', True)
+                # page.session.set('loggedIn', True)
                 # Salva login no armazenamento local
                 page.client_storage.set("logado", "sim")
                 ft.Text('Bem vindo!', color='green')
@@ -94,7 +97,7 @@ def main(page): # Alterado para async def
         if page.session.get('playTreino'):
             page.open(dlg_fechar_app)
         
-        page.client_storage.set("logado", False) # login no armazenamento local
+        page.client_storage.remove("logado") # login no armazenamento local
         grid_exercicios.controls.clear()
         page.session.clear()
         page.clean()         # limpa todos os controles visíveis
@@ -709,9 +712,12 @@ def main(page): # Alterado para async def
         #     return
         # if route_guard():
         #     return  # Impede a exibição da rota protegida
-        if page.client_storage.get('logado') != 'sim' and not page.session.get('loggedIn') and page.route != '/login':
-            page.go('/login')
-            return
+        if page.route != '/login':
+            sleep(0.1)
+            logado = page.client_storage.get('logado')
+            if logado != 'sim':
+                page.go('/login')
+                return
         
         if page.route == '/login':
             page.views.append(login_page())
