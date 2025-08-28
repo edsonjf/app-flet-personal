@@ -709,7 +709,7 @@ def main(page): # Alterado para async def
         #     return
         # if route_guard():
         #     return  # Impede a exibição da rota protegida
-        if page.client_storage.get('logado') != 'sim' and page.route != '/login':
+        if page.client_storage.get('logado') != 'sim' and not page.session.get('loggedIn') and page.route != '/login':
             page.go('/login')
             return
         
