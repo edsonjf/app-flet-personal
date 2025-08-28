@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, ControleAcesso
 from funcoes import df_gifs, criar_card
 from time import sleep
+import asyncio
 
 def main(page): # Alterado para async def
     page.vertical_alignment = "stretch"
@@ -12,12 +13,14 @@ def main(page): # Alterado para async def
     
     # if 'loggedIn' not in page.session.get_keys():
     #     page.session.set('loggedIn', False)
-    if page.client_storage.get("logado") is None:
+    if not page.client_storage.contains_key("logado"):
         page.client_storage.set('logado', 'nao')
     if 'current_username' not in page.session.get_keys():
         page.session.set('current_username', None)
-    if 'usuario_id' not in page.session.get_keys():
-        page.session.set('usuario_id', None)
+    # if not page.client_storage.contains_key("usuario_id"):
+    #     page.client_storage.set('usuario_id', '0')
+    # if 'usuario_id' not in page.session.get_keys():
+    #     page.session.set('usuario_id', None)
     if 'treino_id' not in page.session.get_keys():
         page.session.set('treino_id', None)
     if 'playTreino' not in page.session.get_keys():
@@ -43,8 +46,8 @@ def main(page): # Alterado para async def
                 # page.session.set('loggedIn', True)
                 # Salva login no armazenamento local
                 page.client_storage.set("logado", "sim")
-                page.session.set('usuario_id', user.id)
-                page.session.set('current_username', user.nome)
+                page.client_storage.set('usuario_id', str(user.id))
+                page.client_storage.set('current_username', user.nome)
                 page.snack_bar = ft.SnackBar(content=ft.Text("Bem vindo!", color="green"))
                 page.snack_bar.open = True
                 page.go('/')
@@ -89,7 +92,7 @@ def main(page): # Alterado para async def
     
     def logout_salvar_treino(e):
         fim_treino(e)
-        salvar_horario_treino(usuario_id=page.session.get('usuario_id'))
+        salvar_horario_treino(usuario_id=page.client_storage.get('usuario_id'))
         page.session.clear()
         page.go('/login')
         page.update()
@@ -97,8 +100,8 @@ def main(page): # Alterado para async def
     def logout(e):
         if page.session.get('playTreino'):
             page.open(dlg_fechar_app)
-        
-        page.client_storage.remove("logado") # login no armazenamento local
+        page.client_storage.clear()
+        # page.client_storage.set('logado', 'nao') # login no armazenamento local
         grid_exercicios.controls.clear()
         page.session.clear()
         page.clean()         # limpa todos os controles visíveis
@@ -177,7 +180,7 @@ def main(page): # Alterado para async def
         nonlocal is_playing
         
         is_playing = not is_playing
-        usuario_id=page.session.get('usuario_id')
+        usuario_id=page.client_storage.get('usuario_id')
         treino_id=page.session.get('treino_id')
         
         if is_playing:
@@ -238,7 +241,7 @@ def main(page): # Alterado para async def
     #     cb.on_change = atualizar_progresso
     ######################################################################
     def home():
-        usuario_id = page.session.get('usuario_id')
+        usuario_id = page.client_storage.get('usuario_id')
         
         col_lista_treinos = ft.Column()
         # col_lista_treinos.scroll = ft.ScrollMode.AUTO
@@ -332,7 +335,7 @@ def main(page): # Alterado para async def
                                         # bgcolor=ft.Colors.BLUE_100,
                                         height=50,
                                         col={"xs": 12, "sm": 6, "md": 6},  # 100% em telas pequenas, 50% em médias, 33% em grandes
-                                        content=ft.Text(f"Olá, {page.session.get('current_username')}!", size=24, weight="bold"),
+                                        content=ft.Text(f"Olá, {page.client_storage.get('current_username')}!", size=24, weight="bold"),
                                     ),
                             ] 
                         ),
@@ -473,7 +476,7 @@ def main(page): # Alterado para async def
     resul_form_parte_corpo = []
     
     def enviar(e):
-        usuario_id = page.session.get('usuario_id')
+        usuario_id = page.client_storage.get('usuario_id')
         resul_form_parte_corpo.clear()
         for cb in checkboxes:
             if cb.value:
@@ -532,7 +535,7 @@ def main(page): # Alterado para async def
         page.update()
         
     def enviar_pse(e):
-        usuario_id = page.session.get('usuario_id')
+        usuario_id = page.client_storage.get('usuario_id')
         
         pse_treino = radio_group_pse.value
         
@@ -713,15 +716,17 @@ def main(page): # Alterado para async def
         #     return
         # if route_guard():
         #     return  # Impede a exibição da rota protegida
-        try:
-            logado = page.client_storage.get('logado')
-        except Exception as e:
-            print("Erro ao acessar client_storage:", e)
-            logado = 'nao'
+        # try:
+        #     logado = page.client_storage.get('logado')
+        # except Exception as e:
+        #     print("Erro ao acessar client_storage:", e)
+        #     logado = 'nao'
 
-        if page.route != '/login' and logado != 'sim':
+        if page.client_storage.get("logado") != 'sim' and page.route != '/login' :
             page.go('/login')
             return
+        
+        
         
         if page.route == '/login':
             page.views.append(login_page())
@@ -732,10 +737,10 @@ def main(page): # Alterado para async def
         elif page.route == '/questionario-1':
             page.views.append(QuestionarioView1())
         page.update()
-    
+            
     page.on_route_change = route_change
     page.go(page.route)
-    
+        
 # Inicia a aplicação Flet.
 # ft.app(target=main) para rodar como app desktop
 # ft.app(target=main, view=ft.WEB_BROWSER) para rodar no navegador
