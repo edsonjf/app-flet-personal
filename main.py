@@ -748,7 +748,13 @@ def main(page): # Alterado para async def
         elif page.route == '/questionario-1':
             page.views.append(QuestionarioView1())
         page.update()
-            
+    
+    # Restaura o login se estiver salvo
+    if page.client_storage.get("logado") == "sim":
+        page.go("/")
+    else:
+        page.go("/login")
+        
     page.on_route_change = route_change
     page.go(page.route) # Inicializa com a rota atual
         
