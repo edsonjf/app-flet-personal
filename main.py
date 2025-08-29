@@ -102,7 +102,7 @@ def main(page): # Alterado para async def
     def logout(e):
         if page.session.get('playTreino'):
             page.open(dlg_fechar_app)
-        page.client_storage.remove("logado")
+        page.client_storage.clear()
         # page.client_storage.set('logado', 'nao') # login no armazenamento local
         grid_exercicios.controls.clear()
         page.session.clear()
