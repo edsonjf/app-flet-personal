@@ -107,6 +107,7 @@ def main(page): # Alterado para async def
         page.clean()         # limpa todos os controles visíveis
         page.views.clear()   # limpa a pilha de views
         page.go("/login")         # redireciona para login
+        page.update()
     
     def salvar_horario_treino(usuario_id, treino_id: int | None=None):
         inicio = page.session.get('playTreino')
