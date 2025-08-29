@@ -53,11 +53,11 @@ def main(page): # Alterado para async def
                 page.go('/')
             else:
                 page.open(login_alerta)
-                ft.Text('Não encontrado!', color='red')
+                # ft.Text('Não encontrado!', color='red')
             page.update()
             
     def login_page():
-        email_field.value = ""
+        # email_field.value = ""
         senha_field.value = ""
         login_button = ft.ElevatedButton('Login', on_click=login_click)
         return ft.View(
@@ -103,13 +103,11 @@ def main(page): # Alterado para async def
         if page.session.get('playTreino'):
             page.open(dlg_fechar_app)
         page.client_storage.clear()
-        # page.client_storage.set('logado', 'nao') # login no armazenamento local
         grid_exercicios.controls.clear()
         page.session.clear()
-        page.clean()         # limpa todos os controles visíveis
+        # page.clean()         # limpa todos os controles visíveis
         page.views.clear()   # limpa a pilha de views
-        page.go("/login")         # redireciona para login
-        page.update()
+        route_change("/login")
     
     def salvar_horario_treino(usuario_id, treino_id: int | None=None):
         inicio = page.session.get('playTreino')
@@ -702,30 +700,21 @@ def main(page): # Alterado para async def
     #     page.controls[0].width = page.width
     #     page.update()
     # page.on_resize = on_resize
-    def route_guard():
-        logado = page.client_storage.get("logado")
+    # def route_guard():
+    #     logado = page.client_storage.get("logado")
 
-        # Se não estiver logado e tentando acessar algo que não seja /login, bloqueia
-        if logado != "sim" and page.route != "/login":
-            page.go("/login")
-            return True  # rota foi bloqueada
+    #     # Se não estiver logado e tentando acessar algo que não seja /login, bloqueia
+    #     if logado != "sim" and page.route != "/login":
+    #         page.go("/login")
+    #         return True  # rota foi bloqueada
 
-        # Se estiver logado e for para /login, redireciona para home
-        if logado == "sim" and page.route == "/login":
-            page.go("/")
-            return True
+    #     # Se estiver logado e for para /login, redireciona para home
+    #     if logado == "sim" and page.route == "/login":
+    #         page.go("/")
+    #         return True
 
-        return False  # rota liberada
-    def manter():
-        logado = page.client_storage.get("logado")
-        if logado != 'sim' and page.route != '/login':
-            page.go('/login')
-            return True
-        elif logado == 'sim' and page.route == '/login':
-            page.go('/')
-            return True
-        return False
-
+    #     return False  # rota liberada
+    
         
     def route_change(route):
         page.views.clear()
@@ -742,16 +731,10 @@ def main(page): # Alterado para async def
         #     print("Erro ao acessar client_storage:", e)
         #     logado = 'nao'
 
-        # if page.client_storage.get("logado") != 'sim' and page.route != '/login':
-        #     page.go('/login')
-        #     return
-        # elif page.client_storage.get("logado") == 'sim' and page.route == '/login':
-        #     page.go('/')
-        #     return
-        
-        if manter():
-            return        
-        
+        if page.client_storage.get("logado") != 'sim' and page.route != '/login':
+            page.go('/login')
+            return
+                
         if page.route == '/login':
             page.views.append(login_page())
         elif page.route == '/':
