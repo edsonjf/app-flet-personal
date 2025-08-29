@@ -703,14 +703,20 @@ def main(page): # Alterado para async def
     #     page.update()
     # page.on_resize = on_resize
     def route_guard():
-        sleep(0.2)
-        # Se não estiver logado e não estiver na rota de login, redireciona
         logado = page.client_storage.get("logado")
+
+        # Se não estiver logado e tentando acessar algo que não seja /login, bloqueia
         if logado != "sim" and page.route != "/login":
             page.go("/login")
-            page.update()
-            return True  # rota foi bloqueada/redirecionada
+            return True  # rota foi bloqueada
+
+        # Se estiver logado e for para /login, redireciona para home
+        if logado == "sim" and page.route == "/login":
+            page.go("/")
+            return True
+
         return False  # rota liberada
+
         
     def route_change(route):
         page.views.clear()
