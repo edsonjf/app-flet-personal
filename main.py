@@ -57,7 +57,7 @@ def main(page): # Alterado para async def
             page.update()
             
     def login_page():
-        email_field.value = ""
+        # email_field.value = ""
         senha_field.value = ""
         login_button = ft.ElevatedButton('Login', on_click=login_click)
         return ft.View(
@@ -702,20 +702,20 @@ def main(page): # Alterado para async def
     #     page.controls[0].width = page.width
     #     page.update()
     # page.on_resize = on_resize
-    def route_guard():
-        logado = page.client_storage.get("logado")
+    # def route_guard():
+    #     logado = page.client_storage.get("logado")
 
-        # Se não estiver logado e tentando acessar algo que não seja /login, bloqueia
-        if logado != "sim" and page.route != "/login":
-            page.go("/login")
-            return True  # rota foi bloqueada
+    #     # Se não estiver logado e tentando acessar algo que não seja /login, bloqueia
+    #     if logado != "sim" and page.route != "/login":
+    #         page.go("/login")
+    #         return True  # rota foi bloqueada
 
-        # Se estiver logado e for para /login, redireciona para home
-        if logado == "sim" and page.route == "/login":
-            page.go("/")
-            return True
+    #     # Se estiver logado e for para /login, redireciona para home
+    #     if logado == "sim" and page.route == "/login":
+    #         page.go("/")
+    #         return True
 
-        return False  # rota liberada
+    #     return False  # rota liberada
 
         
     def route_change(route):
@@ -725,17 +725,17 @@ def main(page): # Alterado para async def
         # if not page.session.get('loggedIn') and page.route != '/login':
         #     page.go('/login')
         #     return
-        if route_guard():
-            return  # Impede a exibição da rota protegida
+        # if route_guard():
+        #     return  # Impede a exibição da rota protegida
         # try:
         #     logado = page.client_storage.get('logado')
         # except Exception as e:
         #     print("Erro ao acessar client_storage:", e)
         #     logado = 'nao'
 
-        # if page.client_storage.get("logado") != 'sim':
-        #     page.go('/login')
-            # return
+        if page.client_storage.get("logado") != 'sim':
+            page.go('/login')
+            return
         
         
         
@@ -748,12 +748,6 @@ def main(page): # Alterado para async def
         elif page.route == '/questionario-1':
             page.views.append(QuestionarioView1())
         page.update()
-    
-    # Restaura o login se estiver salvo
-    if page.client_storage.get("logado") == "sim":
-        page.go("/")
-    else:
-        page.go("/login")
         
     page.on_route_change = route_change
     page.go(page.route) # Inicializa com a rota atual
