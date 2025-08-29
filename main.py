@@ -699,13 +699,13 @@ def main(page): # Alterado para async def
     #     page.controls[0].width = page.width
     #     page.update()
     # page.on_resize = on_resize
-    # def route_guard():
-    #     # Se não estiver logado e não estiver na rota de login, redireciona
-    #     logado = page.client_storage.get("logado")
-    #     if page.session.get('loggedIn') and logado != "sim" and page.route != "/login":
-    #         page.go("/login")
-    #         return True  # rota foi bloqueada/redirecionada
-    #     return False  # rota liberada
+    def route_guard():
+        # Se não estiver logado e não estiver na rota de login, redireciona
+        logado = page.client_storage.get("logado")
+        if logado != "sim" and page.route != "/login":
+            page.go("/login")
+            return True  # rota foi bloqueada/redirecionada
+        return False  # rota liberada
         
     def route_change(route):
         page.views.clear()
@@ -714,17 +714,17 @@ def main(page): # Alterado para async def
         # if not page.session.get('loggedIn') and page.route != '/login':
         #     page.go('/login')
         #     return
-        # if route_guard():
-        #     return  # Impede a exibição da rota protegida
+        if route_guard():
+            return  # Impede a exibição da rota protegida
         # try:
         #     logado = page.client_storage.get('logado')
         # except Exception as e:
         #     print("Erro ao acessar client_storage:", e)
         #     logado = 'nao'
 
-        if page.client_storage.get("logado") != 'sim' and page.route != '/login' :
-            page.go('/login')
-            return
+        # if page.client_storage.get("logado") != 'sim':
+        #     page.go('/login')
+            # return
         
         
         
@@ -739,7 +739,7 @@ def main(page): # Alterado para async def
         page.update()
             
     page.on_route_change = route_change
-    page.go(page.route)
+    page.go(page.route) # Inicializa com a rota atual
         
 # Inicia a aplicação Flet.
 # ft.app(target=main) para rodar como app desktop
