@@ -57,6 +57,8 @@ def main(page): # Alterado para async def
             page.update()
             
     def login_page():
+        email_field.value = ""
+        senha_field.value = ""
         login_button = ft.ElevatedButton('Login', on_click=login_click)
         return ft.View(
             "/login", # Rota desta View
@@ -701,6 +703,7 @@ def main(page): # Alterado para async def
     #     page.update()
     # page.on_resize = on_resize
     def route_guard():
+        sleep(0.2)
         # Se não estiver logado e não estiver na rota de login, redireciona
         logado = page.client_storage.get("logado")
         if logado != "sim" and page.route != "/login":
