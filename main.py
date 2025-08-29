@@ -708,6 +708,7 @@ def main(page): # Alterado para async def
         logado = page.client_storage.get("logado")
         if logado != "sim" and page.route != "/login":
             page.go("/login")
+            page.update()
             return True  # rota foi bloqueada/redirecionada
         return False  # rota liberada
         
