@@ -702,35 +702,10 @@ def main(page): # Alterado para async def
     # page.on_resize = on_resize
     # def route_guard():
     #     logado = page.client_storage.get("logado")
-
-    #     # Se não estiver logado e tentando acessar algo que não seja /login, bloqueia
-    #     if logado != "sim" and page.route != "/login":
-    #         page.go("/login")
-    #         return True  # rota foi bloqueada
-
-    #     # Se estiver logado e for para /login, redireciona para home
-    #     if logado == "sim" and page.route == "/login":
-    #         page.go("/")
-    #         return True
-
-    #     return False  # rota liberada
-    
         
     def route_change(route):
         page.views.clear()
         
-        # Se não estiver logado
-        # if not page.session.get('loggedIn') and page.route != '/login':
-        #     page.go('/login')
-        #     return
-        # if route_guard():
-        #     return  # Impede a exibição da rota protegida
-        # try:
-        #     logado = page.client_storage.get('logado')
-        # except Exception as e:
-        #     print("Erro ao acessar client_storage:", e)
-        #     logado = 'nao'
-
         if page.client_storage.get("logado") != 'sim' and page.route != '/login':
             page.go('/login')
             return
