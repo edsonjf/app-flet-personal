@@ -9,21 +9,14 @@ dados = {
 }
 df_gifs = pd.DataFrame(dados)
 
-# with SessionLocal as db:
 def obter_gifs(id:int, db): 
     index = []
     for item in db.query(Treino).filter_by(usuario_id=id).all():
         for exercicio in item.exercicios_prescritos:
             index.append(exercicio.id)
-            # filtro = df_gifs[df_gifs['Arquivo'].str.lower().str.split('.').str[0]==exercicio.exercicio.nome.lower()]
-            # filtro = df_gifs['Arquivo'].str.contains(fr"\b{exercicio.exercicio.nome}.gif\b", na=False, case=False, regex=True)
-            # if not df_gifs[filtro].empty:
-            #     ids = df_gifs[filtro].index.tolist()
-            #     index.extend(ids)
     gifs = df_gifs.loc[index]['Arquivo'].values.tolist()
     return gifs
 
-# def criar_card(nome: str, descricao: str, imagem_url: str) -> ft.Card:
 def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:float | None, intervalo:float | None,
                usuario_id, treino_id, exercicio_id,
                botao_play, imagem_url: str, page) -> ft.Card:
@@ -50,7 +43,6 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
                 ), 
                 ft.Column(
                     [
-                        # controle,
                         coluna1
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
@@ -58,7 +50,6 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
                     width=300,
                     scroll=ft.ScrollMode.AUTO
                 ),
-                # botao_salvar
                 ft.ElevatedButton("Salvar Série", on_click=lambda e: salva_fecha_form(e))
             ]
         ),
@@ -73,32 +64,27 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
         
     icon_button = ft.IconButton(
         icon=ft.Icons.SAVE,
-        icon_color=ft.Colors.GREY,
+        icon_color= ft.colors.LIGHT_GREEN_400,
         icon_size=40,
         tooltip="Salvar Séries",
         on_click=lambda e: page.open(form),
         # disabled= True,
         # visible=True
     )
-    
+        
     return ft.Card(
         width=None,
         height=None,
         expand=True, 
-        col={"xs": 10, "sm": 6, "md": 4},
-        # elevation=4,
+        col={"xs": 8, "sm": 6, "md": 4},
         content=ft.Column(
             expand=True,
-            # col={"xs": 12, "sm": 6, "md": 4},
-            # padding=10,
             controls=[
                 ft.Container(
                     expand=True,
                     content=ft.Row(
                         alignment=ft.MainAxisAlignment.CENTER,
-                        # vertical_alignment=ft.MainAxisAlignment.CENTER,
                         expand=True,
-                        # scroll='auto',
                         controls=[ft.Image(
                             src=imagem_url,
                             error_content=ft.Text("Imagem não encontrada", color="red"),
