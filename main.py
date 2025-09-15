@@ -147,7 +147,7 @@ def main(page): # Alterado para async def
         icon=ft.Icons.STOP_CIRCLE,
         icon_size=40,
         tooltip="Stop",
-        icon_color=ft.Colors.RED,
+        icon_color=ft.Colors.GREY,
         disabled=True
     )
     
@@ -187,9 +187,9 @@ def main(page): # Alterado para async def
         if is_playing:
             # play_button.icon = ft.icons.PAUSE
             # play_button.tooltip = "Pause"
-            play_button.icon_color = ft.Colors.RED
+            play_button.icon_color = ft.Colors.GREY
             play_button.disabled = True
-            stop_button.icon_color = ft.Colors.GREEN
+            stop_button.icon_color = ft.Colors.RED
             stop_button.disabled = False # ativa o botão
             grid_exercicios.disabled = False
             txt2.value = 'Treino em andamento!'
@@ -197,7 +197,7 @@ def main(page): # Alterado para async def
         else:
             play_button.icon_color = ft.Colors.GREEN
             play_button.disabled = False
-            stop_button.icon_color = ft.Colors.RED
+            stop_button.icon_color = ft.Colors.GREY
             stop_button.disabled = True
             grid_exercicios.disabled = True
             txt2.value = 'Treino finalizado!'
@@ -249,7 +249,6 @@ def main(page): # Alterado para async def
         texto = ft.Text()
         # row2 = ft.Row()
         # row2.height = page.height * 0.7
-        # row2.scroll = 'auto'
         
         with SessionLocal() as db:
             # Carrega os treinos disponíveis no dropdown
