@@ -38,6 +38,7 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
                 ft.Row(
                     controls=[
                         ft.Text('Quantas séries:'),
+                        
                         controle
                     ]
                 ), 
@@ -61,13 +62,19 @@ def criar_card(nome: str, series: int, repeticoes:int, tempo:float | None, peso:
         salvar_resultados(e, usuario_id=usuario_id, treino_id=treino_id, exercicio_id=exercicio_id, page=page)
         form.open = False
         page.update()
+    
+    def abre_limpa_form(e):
+        coluna1.controls.clear()
+        txt_number.value = 0
+        page.open(form)
         
     icon_button = ft.IconButton(
         icon=ft.Icons.SAVE,
         icon_color= ft.colors.LIGHT_GREEN_400,
         icon_size=40,
         tooltip="Salvar Séries",
-        on_click=lambda e: page.open(form),
+        # on_click=lambda e: page.open(form),
+        on_click=lambda e: abre_limpa_form(e=e),
         # disabled= True,
         # visible=True
     )
@@ -152,12 +159,12 @@ def parse_int(valor):
 
 def acrescentar(e, page):
     txt_number.value = str(int(txt_number.value) + 1)
-    atualizar_coluna1()
+    atualizar_coluna1(e)
     page.update()
 
 def diminuir(e, page):
     txt_number.value = str(int(txt_number.value) - 1)
-    atualizar_coluna1()
+    atualizar_coluna1(e)
     page.update()
 
 sliders = []
@@ -206,7 +213,7 @@ def atualizar_coluna1(e=None):
                 )
             )
         )
-    # page.update()
+    # .update()
     
 
 def salvar_resultados(e, usuario_id:int,
