@@ -163,7 +163,7 @@ def acrescentar(e, page):
     page.update()
 
 def diminuir(e, page):
-    txt_number.value = str(int(txt_number.value) - 1)
+    txt_number.value = str(int(txt_number.value) - 1) if int(txt_number.value) > 0 else '0'
     atualizar_coluna1(e)
     page.update()
 

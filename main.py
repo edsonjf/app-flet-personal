@@ -1,6 +1,6 @@
 import flet as ft
 from datetime import datetime, timezone
-from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, ControleAcesso
+from models import Usuario, SessionLocal, Treino, QuestionarioDor, Pse, ControleAcesso, CicloMenstrual
 from funcoes import df_gifs, criar_card
 from time import sleep
 import asyncio
@@ -172,6 +172,7 @@ def main(page): # Alterado para async def
         page.session.set('playTreino', agora.isoformat())
         # p_session.value = page.session.get('playTreino')
         page.update()
+        
     def fim_treino(e):
         agora = datetime.now()
         page.session.set('stopTreino', agora.isoformat())
@@ -223,6 +224,76 @@ def main(page): # Alterado para async def
     
     play_button.on_click = toggle_play_pause
     stop_button.on_click = open_dlg
+    
+    # radio_text_ciclo_menstrual = ft.Text()
+    # def radio_item_ciclo_menstrual(e):
+    #     radio_text_ciclo_menstrual.value = e.control.value
+    #     page.update()
+
+    # radio_group_ciclo_menstrual = ft.RadioGroup(
+    #     content=ft.Column(
+    #         alignment=ft.MainAxisAlignment.CENTER,
+    #         controls=[
+    #             ft.Text('Está no período menstrual?'),
+    #             ft.Row(
+    #                 controls=[
+    #                     ft.Radio(value='Não', label="Não"),
+    #                     ft.Radio(value='Sim', label='Sim'),
+    #                 ]
+    #             )
+                
+    #         ]
+    #     ),
+    #     on_change=radio_item_ciclo_menstrual
+    # ) 
+    
+    # if str(radio_group_ciclo_menstrual.value).lower() == 'sim':
+    #         salvar_ciclo_menstrual(e)
+    
+    def abre_dlg_ciclo_menstrual(e):
+        page.open(dlg_ciclo_menstrual)
+        page.update()        
+    
+    def fecha_dlg_menstrual(e):
+        page.close(dlg_ciclo_menstrual)
+        page.update()
+        
+    def salvar_ciclo_menstrual(e):
+        with SessionLocal() as session:
+            try:
+                ciclo = CicloMenstrual(
+                    usuario_id=page.client_storage.get('usuario_id'),
+                    ciclo='sim'
+                )
+            
+                session.add(ciclo)
+                session.commit()
+                dlg_ciclo_menstrual.open = False
+                page.update()
+            except Exception as ex:
+                #  Se o commit falhar, faz rollback e informa o usuário (opcional)
+                session.rollback()
+                print(f"Erro ao salvar no banco de dados: {ex}")
+                # Aqui você poderia mostrar uma mensagem de erro na UI
+            
+    
+        
+    dlg_ciclo_menstrual = ft.AlertDialog(
+        modal=False,
+        title=ft.Text("Ciclo menstrual"),
+        content=ft.Text("Você está no ciclo menstrual?"),
+        actions=[
+            ft.TextButton("Sim", on_click= salvar_ciclo_menstrual),
+            ft.TextButton("Não", on_click= fecha_dlg_menstrual),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+        # on_dismiss=lambda e: print("Modal dialog dismissed!"),
+    )
+    
+    
+        
+    botao_ciclo_menstrual = ft.TextButton('Está no período menstrual?', on_click= abre_dlg_ciclo_menstrual, width=150, height=50)
+    
     #####################################################################
     # check_box_progress = [ft.Checkbox(label=f"{i}", value=False) for i in range(10)]
     # progress_bar = ft.ProgressBar(width=200, value=0)
@@ -255,7 +326,14 @@ def main(page): # Alterado para async def
             # usuario = db.query(Usuario).filter_by(id=usuario_id).first()
             # page.session.set('current_username', usuario.nome)
             nomes_treinos = [x.titulo for x in db.query(Treino).filter_by(usuario_id=usuario_id).all()]
-        
+            sexo = db.query(Usuario).filter_by(id=usuario_id).first().sexo
+        # if sexo == 'feminino':
+            # page.dialog = dlg_ciclo_menstrual
+            # dlg_ciclo_menstrual.open = True
+            # abre_dlg_ciclo_menstrual()
+            # page.update()
+            
+            
         # Função chamada ao selecionar um item no dropdown
         def dropdown_chama(e):
             dropdown_selected = str(e.control.value)
@@ -333,10 +411,17 @@ def main(page): # Alterado para async def
                             controls=[
                                 ft.Container(
                                         # bgcolor=ft.Colors.BLUE_100,
-                                        height=50,
-                                        col={"xs": 12, "sm": 6, "md": 6},  # 100% em telas pequenas, 50% em médias, 33% em grandes
+                                        alignment=ft.alignment.center,
+                                        height=60,
+                                        col={"xs": 6, "sm": 6, "md": 6},  # 100% em telas pequenas, 50% em médias, 33% em grandes
                                         content=ft.Text(f"Olá, {page.client_storage.get('current_username')}!", size=24, weight="bold"),
                                     ),
+                                ft.Container(
+                                    height=60,
+                                    col={"xs": 6, "sm": 6, "md": 6},
+                                    content=botao_ciclo_menstrual,
+                                    alignment=ft.alignment.center
+                                ) if sexo == 'feminino' else ft.Text("")
                             ] 
                         ),
                         ft.Divider(),

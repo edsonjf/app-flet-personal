@@ -34,13 +34,15 @@ class Usuario(Base):
     email = Column(String(150), unique=True, nullable=False)
     senha = Column(String(100), unique=False)
     nascimento = Column(Date, unique=False, nullable=True)
-
+    sexo = Column(String(10), unique=False)
+    
     # Relacionamento 1-para-N 
     treinos = relationship("Treino", back_populates="usuario")
     questionario = relationship('QuestionarioDor', back_populates='usuario')
     medidas = relationship("ControleMedida", back_populates="usuario")
     controle_acessos = relationship("ControleAcesso", back_populates="usuario")
     pse = relationship("Pse", back_populates="usuario")
+    ciclo_menstrual = relationship("CicloMenstrual", back_populates="usuario")
 
 class Treino(Base):
     __tablename__ = 'treinos'
@@ -153,5 +155,17 @@ class Pse(Base):
     
     usuario = relationship("Usuario", back_populates="pse")
     treino = relationship("Treino", back_populates="pse")
+    
+class CicloMenstrual(Base):
+    __tablename__ = 'ciclo_menstrual'
+    
+    id = Column(Integer, primary_key=True)
+    data = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
+    ciclo = Column(String(3), unique=False, nullable=True)
+    
+    # Relacionamento 1-para-N 
+    usuario = relationship("Usuario", back_populates="ciclo_menstrual")
+    
 # Cria a tabela se ainda não existir
 Base.metadata.create_all(bind=engine)
